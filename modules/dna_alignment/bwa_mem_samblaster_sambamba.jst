@@ -92,7 +92,7 @@
       -K 100000000 \
       -t 9 \
       -R "{{ r_flag }}" \
-      "{{ constants.phoenix.bwa_index }}" \
+      "{{ constants.coyote.bwa_index }}" \
       temp/{{ sample.gltype }}/alignment/bwa/{{ sample.name }}/{{ sample.rglb }}/{{ sample.rglb }}_R1_merged.fastq.gz \
       temp/{{ sample.gltype }}/alignment/bwa/{{ sample.name }}/{{ sample.rglb }}/{{ sample.rglb }}_R2_merged.fastq.gz |\
     samblaster |\

@@ -1,23 +1,10 @@
 {% macro remove_files(directory, before, after) %}
 
-{% if after is string %}
-    {% set task_name %}{{ after }}{% endset %}
-{% else %}
-    {% set task_name %}{{ after[0] }}{% endset %}
-{% endif %}
-
-- name: removing_files_{{ task_name }}
+- name: removing_files_{{ after }}
   {% if before is not none %}
   before-re: {{ before }}
   {% endif %}
-  after-re:
-    {% if after is string %}
-    - {{ after }}
-    {% else %}
-    {% for task in after %}
-    - {{ task }}
-    {% endfor %}
-    {% endif %}
+  after-re: {{ after }}
   walltime: "0:10:00"
   cpus: 1
   mem: 2G

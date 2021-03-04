@@ -11,7 +11,7 @@
     - {{ final_vcf_prefix }}.snpeff.can.vcf.gz.tbi
   walltime: "8:00:00"
   cpus: 4
-  mem: 8G
+  mem: 16G
   cmd: |
     set -eu
     set -o pipefail
@@ -28,12 +28,13 @@
 
     {# Generate full annotation set #}
     snpEff ann \
+      -Xmx15g \
       -t \
-      -c "{{ constants.phoenix.snpeff_config }}" \
-      -dataDir "{{ constants.phoenix.snpeff_data }}" \
+      -c "{{ constants.coyote.snpeff_config }}" \
+      -dataDir "{{ constants.coyote.snpeff_data }}" \
       -hgvs \
       -lof \
-      "{{ constants.phoenix.snpeff_db }}" \
+      "{{ constants.coyote.snpeff_db }}" \
       "{{ input_vcf }}" \
       | \
     bcftools view --output-type z --output-file "{{ final_vcf_prefix }}.snpeff.full.vcf.gz"
@@ -49,13 +50,14 @@
     #}
     {# Generate canonical annotation set #}
     snpEff ann \
+      -Xmx15g \
       -t \
-      -c "{{ constants.phoenix.snpeff_config }}" \
-      -dataDir "{{ constants.phoenix.snpeff_data }}" \
+      -c "{{ constants.coyote.snpeff_config }}" \
+      -dataDir "{{ constants.coyote.snpeff_data }}" \
       -canon \
       -hgvs \
       -lof \
-      "{{ constants.phoenix.snpeff_db }}" \
+      "{{ constants.coyote.snpeff_db }}" \
       "{{ input_vcf }}" \
       | \
     bcftools view --output-type z --output-file "{{ final_vcf_prefix }}.snpeff.can.vcf.gz"

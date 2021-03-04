@@ -1,19 +1,19 @@
 <img src="/images/TGen_Color_LOGO_medium.png" width="208.3" height="78" title="TGen Logo"> <br/>
-# Phoenix Workflow - A JetStream Workflow
+# Coyote Workflow - A JetStream Workflow
 
-This workflow supports the analysis of human sequencing samples against the GRCh38 reference genome 
+This workflow supports the analysis of canine sequencing samples against the CanFam3.1 reference genome 
 using ensembl version 98 gene models.  The workflow is designed to support project level analysis 
 that can include one or multiple types of data. Though not required the expectation is a project contains 
 data from a single individual thus centralizing all data types in a standardized output structure. The 
-workflow template supports a diverse array of analysis methods required to analyze DNA, RNA, and single cell 
-data.  Based on standardized variables it also supports integrated analysis between data types.  For some 
+workflow template supports a diverse array of analysis methods required to analyze DNA, RNA.
+Based on standardized variables it also supports integrated analysis between data types.  For some 
 processes multiple options are provided that can be individually enabled or disabled by configuration 
 parameters. Like all JetStream (https://github.com/tgen/jetstream) workflows developed at TGen this workflow is designed to facilitate our dynamic and 
 time sensitive analysis needs while ensuring compute and storage resources are used efficiently. The primary 
 input is a JSON record from the TGen LIMS but hand created inputs in the form of a JSON or EXCEL worksheet can 
 also be provided when run manually or by submission to the related JetStream Centro (https://github.com/tgen/jetstream_centro) 
 web portal. All required files defined the the `pipeline.yaml` can be created using code provided in the JetStream Resources
-repository (https://github.com/tgen/jetstream_resources).
+repository (https://github.com/tgen/jetstream_resources). 
 
 ## Supported Analysis
 
@@ -34,12 +34,12 @@ _Click to show details_
     - Chunks are aligned with BWA, processed with samtools fixmate and samtools sort
     - Individual chunks are merged with samtools merge
     - PCR duplicates and platform (optical) duplicates are marked with samtools markdup
-  - GATK Best Paractices [`broad`]("Like" - does not support uBAM inputs)
+  - GATK Best Paractices [`broad`]("Like" - does not support uBAM inputs) **NOT TESTED FOR COYOTE**
     - Fastq files are chunked to 40M reads
     - Chunks are aligned with BWA, and converted to BAM files with samtools view
     - In one step individual chunks are merged and PCR or platform (optical) duplicates are marked with GATK/Picard markduplicates
     - Alignment records are sorted using GATK/Picard SortSAM
-  - Clinical [`ashion`]
+  - Clinical [`ashion`] **NOT TESTED FOR COYOTE**
     - Fastq files are concatenated
     - In one step reads are aligned with BWA, duplicates are marked with samblaster, converted to BAM and sorted using sambamba
   - Base Recalibration (optional, off by default)
@@ -58,14 +58,14 @@ _Click to show details_
   <img src="/images/Constitutional_Analysis_Options.png" width="768" height="512" title="Constitutional Analysis">
 
   - Variant Discovery (SNV/INDEL)
-    - Deepvariant (Only calls on primary contigs 1-22, X, Y)
+    - Deepvariant (Only calls on primary contigs 1-38, X)
       - requires a GPU compute resource
     - GATK HaplotypeCaller (gVCF mode)
       - gVCF generation
       - single sample calling using genotypeGVCFs and CNNscroreVariant
     - Freebayes
     - Strelka2 (Germline mode)
-    - Octopus (Individual) (Only calls on primary contigs 1-22, X, Y)
+    - Octopus (Individual) (Only calls on primary contigs 1-38, X)
   - Structural Variant Detection
     - Manta
   - Copy Number Analysis
@@ -82,12 +82,11 @@ _Click to show details_
   <img src="/images/Somatic_Analysis_Options.png" width="768" height="512" title="Somatic Analysis">
 
   - Variant Discovery (SNV/INDEL)
-    - Strelka2 (Somatic mode)
     - Mutect2
     - Lancet
       - Currently NOT enabled for genomes by default 
     - VarDictJava
-    - Octopus (Only calls on primary contigs 1-22, X, Y)
+    - Octopus (Only calls on primary contigs 1-38, X)
   - Structural Variant Detection
     - Manta
     - Delly
@@ -117,13 +116,14 @@ _Click to show details_
     - HtSeq
     - FeatureCounts
   - Fusion Transcript Detection
-    - Star-Fusion
+    - Star-Fusion (Currently non-functional)
 
 </details>
 
 <details>
   <summary><b>Single Cell RNA Sequencing</b></summary>
   
+  <b>NOT TESTED FOR COYOTE</b>
   - 10x Genomics Cell Ranger
     - Supports 3' and 5' assays
     - Supports VDJ analysis
@@ -277,7 +277,7 @@ All tools build with public easybuild configuration files, available [here](http
 | [hmmcopyutils](https://github.com/shahcompbio/hmmcopy_utils) | 1.0 | 1.0 | no official release | Yes |
 | [htseq](https://github.com/htseq/htseq/releases) | 0.12.3 | 0.12.3 | | |
 | [htslib](https://github.com/samtools/htslib/releases) | 1.10.2 | 1.10.2 | star-fusion(bgzip) | Yes |
-| [ichor](https://github.com/broadinstitute/ichorCNA/releases) | 0.2.0 | 0.2.0 | package in R/3.6.1-phoenix module | Yes? |
+| [ichor](https://github.com/broadinstitute/ichorCNA/releases) | 0.2.0 | 0.2.0 | package in R/3.6.1-coyote module | Yes? |
 | [jellyfish](https://github.com/gmarcais/Jellyfish/releases) | 2.3.0 | 2.3.0 | star-fusion | Yes |
 | [lancet](https://github.com/nygenome/lancet/releases) | 1.1.0 | 1.1.0 | | Yes |
 | [manta](https://github.com/Illumina/manta/releases) | 1.6.0 | 1.6.0 | | Yes |
@@ -464,7 +464,7 @@ All tools build with public easybuild configuration files, available [here](http
 </details>
 
 ## Install Guide
-Please see the [wiki](https://github.com/tgen/phoenix/wiki) for a detailed install guide
+Please see the [wiki](https://github.com/tgen/coyote/wiki) for a detailed install guide
 
 ## Running from command line
 In order to run from the command line, we need to create a config file for our project. The general format is as follows:
@@ -475,19 +475,19 @@ In order to run from the command line, we need to create a config file for our p
     "email": "",
     "hpcAccount": "",
     "isilonPath": "",
-    "pipeline": "phoenix",
+    "pipeline": "coyote",
     "dataFiles": [],
     "dnaAlignmentStyle": "tgen",
     "email": "somebody@tgen.org",
     "isilonPath": "",
-    "pipeline": "phoenix@version",
+    "pipeline": "coyote@version",
     "project": "Project_Name",
     "submitter": "somebody",
     "tasks": {},
 }
 ```
 
-Here is a larger example with actual data for running the phoenix pipeline on a NA12878 project:
+Here is a larger example with actual data for running the coyote pipeline on a NA12878 project:
 <details><summary>NA12878 Example</summary>
   <p>
     
@@ -763,8 +763,6 @@ Here is a larger example with actual data for running the phoenix pipeline on a 
     ],
     "dnaAlignmentStyle": "tgen",
     "email": "example@tgen.org",
-    "ethnicity": "Caucasian",
-    "familyCode": "",
     "holdConfig": false,
     "hpcAccount": "tgen-#####",
     "isilonPath": "/example/giab/",
@@ -773,127 +771,105 @@ Here is a larger example with actual data for running the phoenix pipeline on a 
     "maternalID": "",
     "patCode": "NA12878",
     "paternalID": "",
-    "pipeline": "phoenix",
+    "pipeline": "coyote",
     "project": "GIAB_NA12878",
     "sex": "Female",
     "study": "GIAB",
     "submitter": "user",
     "submitterEmail": "examplet@tgen.org",
     "tasks": {
-        "Exome_alignment_base_recalibration_gatk": false,
-        "Exome_alignment_mark_duplicates_gatk": false,
-        "Exome_alignment_mark_duplicates_samblaster": false,
-        "Exome_alignment_mark_duplicates_samtools": true,
-        "Exome_constitutional_annotate_vcfs_bcftools_clinvar_20190715": true,
-        "Exome_constitutional_annotate_vcfs_bcftools_cosmic_coding_v89": true,
-        "Exome_constitutional_annotate_vcfs_bcftools_cosmic_noncoding_v89": true,
-        "Exome_constitutional_annotate_vcfs_bcftools_dbsnp_v152": true,
-        "Exome_constitutional_annotate_vcfs_bcftools_gnomad_exome_v2_1_1_liftover": true,
-        "Exome_constitutional_annotate_vcfs_bcftools_gnomad_genome_v3_0": true,
-        "Exome_constitutional_annotate_vcfs_snpEff_ann": true,
-        "Exome_constitutional_annotate_vcfs_vep": true,
-        "Exome_constitutional_genotype_hc_gvcf_gatk_GenotypeGVCFs": false,
-        "Exome_constitutional_snp_indel_caller_deepvariant": true,
-        "Exome_constitutional_snp_indel_caller_freebayes": false,
-        "Exome_constitutional_snp_indel_caller_gatk_HaplotypeCaller": true,
-        "Exome_constitutional_snp_indel_caller_octopus": false,
-        "Exome_constitutional_snp_indel_caller_strelka2": false,
-        "Exome_constitutional_structural_caller_manta": true,
-        "Exome_quality_control_constitutional_contamination_check_VerifyBamID": true,
-        "Exome_quality_control_constitutional_sex_check_freebayes": true,
-        "Exome_quality_control_genotype_concordance_snpSniffer": true,
-        "Exome_quality_control_stats_gatk_CollectHsMetrics": true,
-        "Exome_quality_control_stats_gatk_CollectMultipleMetrics": true,
-        "Exome_quality_control_stats_gatk_ConvertSequencingArtifactToOxoG": true,
-        "Exome_quality_control_stats_samtools_flagstat": true,
-        "Exome_quality_control_stats_samtools_idxstats": true,
-        "Exome_quality_control_stats_samtools_stats": true,
-        "Exome_somatic_annotate_vcfs_bcftools_clinvar_20190715": true,
-        "Exome_somatic_annotate_vcfs_bcftools_cosmic_coding_v89": true,
-        "Exome_somatic_annotate_vcfs_bcftools_cosmic_noncoding_v89": true,
-        "Exome_somatic_annotate_vcfs_bcftools_dbsnp_v152": true,
-        "Exome_somatic_annotate_vcfs_bcftools_gnomad_exome_v2_1_1_liftover": true,
-        "Exome_somatic_annotate_vcfs_bcftools_gnomad_genome_v3_0": true,
-        "Exome_somatic_annotate_vcfs_snpEff_ann": true,
-        "Exome_somatic_annotate_vcfs_vep": true,
-        "Exome_somatic_cna_caller_gatk": true,
-        "Exome_somatic_merge_vcfs_vcfMerger2": true,
-        "Exome_somatic_snp_indel_caller_VarDict": true,
-        "Exome_somatic_snp_indel_caller_gatk_mutect2": true,
-        "Exome_somatic_snp_indel_caller_lancet": true,
-        "Exome_somatic_snp_indel_caller_octopus": true,
-        "Exome_somatic_snp_indel_caller_strelka2": true,
-        "Exome_somatic_structural_caller_delly": false,
-        "Exome_somatic_structural_caller_manta": true,
-        "Exome_tumor_mm_igtx_pairoscope": true,
-        "Genome_alignment_base_recalibration_gatk": false,
-        "Genome_alignment_mark_duplicates_gatk": false,
-        "Genome_alignment_mark_duplicates_samblaster": false,
-        "Genome_alignment_mark_duplicates_samtools": true,
-        "Genome_constitutional_annotate_vcfs_bcftools_clinvar_20190715": true,
-        "Genome_constitutional_annotate_vcfs_bcftools_cosmic_coding_v89": true,
-        "Genome_constitutional_annotate_vcfs_bcftools_cosmic_noncoding_v89": true,
-        "Genome_constitutional_annotate_vcfs_bcftools_dbsnp_v152": true,
-        "Genome_constitutional_annotate_vcfs_bcftools_gnomad_exome_v2_1_1_liftover": true,
-        "Genome_constitutional_annotate_vcfs_bcftools_gnomad_genome_v3_0": true,
-        "Genome_constitutional_annotate_vcfs_snpEff_ann": true,
-        "Genome_constitutional_annotate_vcfs_vep": true,
-        "Genome_constitutional_cna_caller_ichor": true,
-        "Genome_constitutional_genotype_hc_gvcf_gatk_GenotypeGVCFs": false,
-        "Genome_constitutional_snp_indel_caller_deepvariant": true,
-        "Genome_constitutional_snp_indel_caller_freebayes": false,
-        "Genome_constitutional_snp_indel_caller_gatk_HaplotypeCaller": true,
-        "Genome_constitutional_snp_indel_caller_octopus": false,
-        "Genome_constitutional_snp_indel_caller_strelka2": false,
-        "Genome_constitutional_structural_caller_manta": true,
-        "Genome_quality_control_constitutional_contamination_check_VerifyBamID": true,
-        "Genome_quality_control_constitutional_sex_check_freebayes": true,
-        "Genome_quality_control_genotype_concordance_snpSniffer": true,
-        "Genome_quality_control_stats_gatk_CollectMultipleMetrics": true,
-        "Genome_quality_control_stats_gatk_CollectRawWgsMetrics": true,
-        "Genome_quality_control_stats_gatk_CollectWgsMetrics": true,
-        "Genome_quality_control_stats_gatk_CollectWgsMetricsWithNonZeroCoverage": true,
-        "Genome_quality_control_stats_gatk_ConvertSequencingArtifactToOxoG": true,
-        "Genome_quality_control_stats_samtools_flagstat": true,
-        "Genome_quality_control_stats_samtools_idxstats": true,
-        "Genome_quality_control_stats_samtools_stats": true,
-        "Genome_somatic_annotate_vcfs_bcftools_clinvar_20190715": true,
-        "Genome_somatic_annotate_vcfs_bcftools_cosmic_coding_v89": true,
-        "Genome_somatic_annotate_vcfs_bcftools_cosmic_noncoding_v89": true,
-        "Genome_somatic_annotate_vcfs_bcftools_dbsnp_v152": true,
-        "Genome_somatic_annotate_vcfs_bcftools_gnomad_exome_v2_1_1_liftover": true,
-        "Genome_somatic_annotate_vcfs_bcftools_gnomad_genome_v3_0": true,
-        "Genome_somatic_annotate_vcfs_snpEff_ann": true,
-        "Genome_somatic_annotate_vcfs_vep": true,
-        "Genome_somatic_cna_caller_gatk": true,
-        "Genome_somatic_merge_vcfs_vcfMerger2": true,
-        "Genome_somatic_snp_indel_caller_VarDict": true,
-        "Genome_somatic_snp_indel_caller_gatk_mutect2": true,
-        "Genome_somatic_snp_indel_caller_lancet": false,
-        "Genome_somatic_snp_indel_caller_octopus": true,
-        "Genome_somatic_snp_indel_caller_strelka2": true,
-        "Genome_somatic_structural_caller_delly": true,
-        "Genome_somatic_structural_caller_manta": true,
-        "Genome_tumor_mm_igtx_pairoscope": true,
-        "RNA_alignment_rna_alignment_STAR": true,
-        "RNA_quality_control_genotype_concordance_snpSniffer": true,
-        "RNA_quality_control_stats_gatk_CollectMultipleMetrics": true,
-        "RNA_quality_control_stats_gatk_CollectRnaSeqMetrics": true,
-        "RNA_quality_control_stats_gatk_ConvertSequencingArtifactToOxoG": true,
-        "RNA_quality_control_stats_samtools_bedcov": true,
-        "RNA_quality_control_stats_samtools_flagstat": true,
-        "RNA_quality_control_stats_samtools_idxstats": true,
-        "RNA_quality_control_stats_samtools_stats": true,
-        "RNA_transcriptome_fusion_caller_Keep_STAR_Fusion_BAM": false,
-        "RNA_transcriptome_fusion_caller_STAR_Fusion": true,
-        "RNA_transcriptome_quantify_expression_HTseq": false,
-        "RNA_transcriptome_quantify_expression_RSEM": false,
-        "RNA_transcriptome_quantify_expression_salmon_bam": false,
-        "RNA_transcriptome_quantify_expression_salmon_fastqs": true,
-        "RNA_transcriptome_quantify_expression_subread_featureCounts": false,
-        "SingleCellRNA_VDJ_Assembly_cellranger_vdj": true,
-        "SingleCellRNA_transcriptome_quantify_expression_STARsolo": true,
-        "SingleCellRNA_transcriptome_quantify_expression_cellranger_count": true
+        "Exome_alignment_base_recalibration_gatk" : false,
+        "Exome_alignment_mark_duplicates_gatk" : false,
+        "Exome_alignment_mark_duplicates_samblaster" : false,
+        "Exome_alignment_mark_duplicates_samtools" : true,
+        "Exome_constitutional_annotate_vcfs_bcftools_eva_gca" : true,
+        "Exome_constitutional_annotate_vcfs_snpEff_ann" : true,
+        "Exome_constitutional_annotate_vcfs_vep" : true,
+        "Exome_constitutional_genotype_hc_gvcf_gatk_GenotypeGVCFs" : true,
+        "Exome_constitutional_snp_indel_caller_deepvariant" : true,
+        "Exome_constitutional_snp_indel_caller_freebayes" : true,
+        "Exome_constitutional_snp_indel_caller_gatk_HaplotypeCaller" : true,
+        "Exome_constitutional_snp_indel_caller_octopus" : true,
+        "Exome_constitutional_snp_indel_caller_strelka2" : true,
+        "Exome_constitutional_structural_caller_manta" : true,
+        "Exome_quality_control_constitutional_contamination_check_VerifyBamID" : true,
+        "Exome_quality_control_constitutional_sex_check_freebayes" : true,
+        "Exome_quality_control_genotype_concordance_snpSniffer" : true,
+        "Exome_quality_control_stats_gatk_CollectHsMetrics" : true,
+        "Exome_quality_control_stats_gatk_CollectMultipleMetrics" : true,
+        "Exome_quality_control_stats_gatk_ConvertSequencingArtifactToOxoG" : true,
+        "Exome_quality_control_stats_samtools_flagstat" : true,
+        "Exome_quality_control_stats_samtools_idxstats" : true,
+        "Exome_quality_control_stats_samtools_stats" : true,
+        "Exome_somatic_annotate_vcfs_bcftools_eva_gca" : true,
+        "Exome_somatic_annotate_vcfs_snpEff_ann" : true,
+        "Exome_somatic_annotate_vcfs_vep" : true,
+        "Exome_somatic_cna_caller_gatk" : true,
+        "Exome_somatic_merge_vcfs_vcfMerger2" : true,
+        "Exome_somatic_snp_indel_caller_VarDict" : true,
+        "Exome_somatic_snp_indel_caller_gatk_mutect2" : true,
+        "Exome_somatic_snp_indel_caller_lancet" : true,
+        "Exome_somatic_snp_indel_caller_octopus" : true,
+        "Exome_somatic_snp_indel_caller_strelka2" : true,
+        "Exome_somatic_structural_caller_delly" : false,
+        "Exome_somatic_structural_caller_manta" : true,
+        "Genome_alignment_base_recalibration_gatk" : false,
+        "Genome_alignment_mark_duplicates_gatk" : false,
+        "Genome_alignment_mark_duplicates_samblaster" : false,
+        "Genome_alignment_mark_duplicates_samtools" : true,
+        "Genome_constitutional_annotate_vcfs_bcftools_eva_gca" : true,
+        "Genome_constitutional_annotate_vcfs_snpEff_ann" : true,
+        "Genome_constitutional_annotate_vcfs_vep" : true,
+        "Genome_constitutional_cna_caller_ichor" : true,
+        "Genome_constitutional_genotype_hc_gvcf_gatk_GenotypeGVCFs" : true,
+        "Genome_constitutional_snp_indel_caller_deepvariant" : true,
+        "Genome_constitutional_snp_indel_caller_freebayes" : true,
+        "Genome_constitutional_snp_indel_caller_gatk_HaplotypeCaller" : true,
+        "Genome_constitutional_snp_indel_caller_octopus" : true,
+        "Genome_constitutional_snp_indel_caller_strelka2" : true,
+        "Genome_constitutional_structural_caller_manta" : true,
+        "Genome_quality_control_constitutional_contamination_check_VerifyBamID" : true,
+        "Genome_quality_control_constitutional_sex_check_freebayes" : true,
+        "Genome_quality_control_genotype_concordance_snpSniffer" : true,
+        "Genome_quality_control_stats_gatk_CollectMultipleMetrics" : true,
+        "Genome_quality_control_stats_gatk_CollectRawWgsMetrics" : true,
+        "Genome_quality_control_stats_gatk_CollectWgsMetrics" : true,
+        "Genome_quality_control_stats_gatk_CollectWgsMetricsWithNonZeroCoverage" : true,
+        "Genome_quality_control_stats_gatk_ConvertSequencingArtifactToOxoG" : true,
+        "Genome_quality_control_stats_samtools_flagstat" : true,
+        "Genome_quality_control_stats_samtools_idxstats" : true,
+        "Genome_quality_control_stats_samtools_stats" : true,
+        "Genome_somatic_annotate_vcfs_bcftools_eva_gca" : true,
+        "Genome_somatic_annotate_vcfs_snpEff_ann" : true,
+        "Genome_somatic_annotate_vcfs_vep" : true,
+        "Genome_somatic_cna_caller_gatk" : true,
+        "Genome_somatic_merge_vcfs_vcfMerger2" : true,
+        "Genome_somatic_snp_indel_caller_VarDict" : true,
+        "Genome_somatic_snp_indel_caller_gatk_mutect2" : true,
+        "Genome_somatic_snp_indel_caller_lancet" : false,
+        "Genome_somatic_snp_indel_caller_octopus" : true,
+        "Genome_somatic_snp_indel_caller_strelka2" : false,
+        "Genome_somatic_structural_caller_delly" : false,
+        "Genome_somatic_structural_caller_manta" : true,
+        "RNA_alignment_rna_alignment_STAR" : true,
+        "RNA_quality_control_genotype_concordance_snpSniffer" : true,
+        "RNA_quality_control_stats_gatk_CollectMultipleMetrics" : true,
+        "RNA_quality_control_stats_gatk_CollectRnaSeqMetrics" : true,
+        "RNA_quality_control_stats_gatk_ConvertSequencingArtifactToOxoG" : true,
+        "RNA_quality_control_stats_samtools_bedcov" : true,
+        "RNA_quality_control_stats_samtools_flagstat" : true,
+        "RNA_quality_control_stats_samtools_idxstats" : true,
+        "RNA_quality_control_stats_samtools_stats" : true,
+        "RNA_transcriptome_fusion_caller_Keep_STAR_Fusion_BAM" : true,
+        "RNA_transcriptome_fusion_caller_STAR_Fusion" : true,
+        "RNA_transcriptome_quantify_expression_HTseq" : true,
+        "RNA_transcriptome_quantify_expression_RSEM" : true,
+        "RNA_transcriptome_quantify_expression_salmon_bam" : true,
+        "RNA_transcriptome_quantify_expression_salmon_fastqs" : true,
+        "RNA_transcriptome_quantify_expression_subread_featureCounts" : true,
+        "SingleCellRNA_VDJ_Assembly_cellranger_vdj" : true,
+        "SingleCellRNA_transcriptome_quantify_expression_STARsolo" : true,
+        "SingleCellRNA_transcriptome_quantify_expression_cellranger_count" : true
     },
     "varDB": false
 }
@@ -962,7 +938,7 @@ template variables:
 $ jetstream init GIAB -C GIAB_NA12878_24582bb3f7.json
 ```
 
-This creates a jetstream project with the title of GIAB. Now in order to run the Phoenix pipeline on this project, we need to use:
+This creates a jetstream project with the title of GIAB. Now in order to run the coyote pipeline on this project, we need to use:
 ```
 $ jetstream pipelines -h
 usage: jetstream pipelines [-h] [-l] [-p PROJECT] [-o OUT] [-b] [-r]
@@ -1025,7 +1001,7 @@ pipeline options:
                         override path to the pipelines home
   -L, --list            show a list of all the pipelines installed
 
-$ jetstream pipelines phoenix -p GIAB
+$ jetstream pipelines coyote -p GIAB
 ```  
 Now we wait for the pipeline to finish!
 
@@ -1083,7 +1059,7 @@ If the attribute isn't strictly required then it is not included in this list.
   - *assayCode*  
     Genome: [*] We are not concerned about the assayCode for genomes.  
     *Note: We have a number of bed files supporting our exome captures, these are the shortened capture codes*  
-    Exome: [ *AG2 | *E61 | *S5U | *S5X | *S6U | *S6X | *S7X | *ST2 | *STL | *STX | *TS1 | *V6C ]   
+    Exome: [ *SC2 | *XT2 ]   
     Used for determining if the sample is DNA/RNA/etc. and adding the corresponding
     tasks to the final workflow. Each sample discovered will take this attribute from
     the first file encountered for that sample in the config file.
@@ -1102,11 +1078,11 @@ If the attribute isn't strictly required then it is not included in this list.
   - *fileType*  
     Assigns the file type.
 
-  - *glPrep* [genome|capture|rna|singlecellrna|singlecellenrichment|singlecellcdna|singlecelltargetamp|matepair|chip]  
+  - *glPrep* [genome|capture|rna]  
     Used for determining the prep used to create the sample and then modifying how the
     pipeline runs depending on the prep. This is used to configure single cell as well as CHIP preps.
 
-  - *glType* [genome|genomephased|exome|rna|singlecellrna|singlecelldna|matepair|chip]  
+  - *glType* [genome|genomephased|exome|rna]  
     Used for determining if the sample is DNA/RNA/etc. and adding the corresponding
     tasks to the final workflow. Each sample discovered will take this attribute from
     the first file encountered for that sample in the config file.

@@ -58,7 +58,7 @@ fileTypes = {
     "bt_cell_counts": {
         "prefix": "samToolsIgCount_",
         "help": "\"bam_name.bam.BTcell.loci.counts.txt\" file generated from rna_getBTcellLociCounts task in the "
-                "phoenix pipeline."
+                "coyote pipeline."
     },
     "verifybamid": {
         "prefix": "verifybamid_",
@@ -66,47 +66,47 @@ fileTypes = {
     },
     "sex_check": {
         "prefix": "sexCheck_",
-        "help": "\"bam_name.bam.sexCheck.out\" file generated from freebayes_sex_check task in the phoenix pipeline."
+        "help": "\"bam_name.bam.sexCheck.out\" file generated from freebayes_sex_check task in the coyote pipeline."
     },
     "oxog_metrics_summary": {
         "prefix": "picardTools_oxogMetrics_",
         "help": "\"bam_name.bam.oxog_metrics_summary.tsv\" file generated from gatk_convertsequencingarrtifacttooxog "
-                "task in the phoenix pipeline. "
+                "task in the coyote pipeline. "
     },
     "snpsniffer_summary": {
         "prefix": "snpsniffer_summary_",
         "help": "\"project_name.SnpSniffer_Mismatch_Summary.tsv\" file generated from snpsniffer_summary "
-                "task in the phoenix pipeline. "
+                "task in the coyote pipeline. "
     },
     "cellranger_metrics": {
         "prefix": "cellranger_metrics_",
         "help": "\".cellranger_count.bam.metrics_summary.csv\" file generated from the cellranger "
-                "task in the phoenix pipeline. "
+                "task in the coyote pipeline. "
     },
     "cellranger_vdj_metrics": {
         "prefix": "cellranger_metrics_",
         "help": "\".cellranger_vdj.bam.metrics_summary.csv\" file generated from the cellranger_vdj_ "
-                "task in the phoenix pipeline. "
+                "task in the coyote pipeline. "
     },
     "starsolo_metrics": {
         "prefix": "starsolo_metrics_",
-        "help": "\"bam_name.Barcodes.stats\" file generated from the starsolo_count task in the phoenix pipeline. "
+        "help": "\"bam_name.Barcodes.stats\" file generated from the starsolo_count task in the coyote pipeline. "
     },
     "samtools_baseQualityYield_summary": {
         "prefix": "samStats_baseQualityYield_",
-        "help": "\"bam_name.Barcodes.stats\" file generated from the starsolo_count task in the phoenix pipeline. "
+        "help": "\"bam_name.Barcodes.stats\" file generated from the starsolo_count task in the coyote pipeline. "
     },
     "samtools_coverage_summary": {
         "prefix": "samStats_coverage_",
-        "help": "\"bam_name.Barcodes.stats\" file generated from the starsolo_count task in the phoenix pipeline. "
+        "help": "\"bam_name.Barcodes.stats\" file generated from the starsolo_count task in the coyote pipeline. "
     },
     "samtools_insertSize_summary": {
         "prefix": "samStats_insertSize_",
-        "help": "\"bam_name.Barcodes.stats\" file generated from the starsolo_count task in the phoenix pipeline. "
+        "help": "\"bam_name.Barcodes.stats\" file generated from the starsolo_count task in the coyote pipeline. "
     },
     "samtools_summaryNumbers_summary": {
         "prefix": "samStats_summaryNumbers_",
-        "help": "\"bam_name.Barcodes.stats\" file generated from the starsolo_count task in the phoenix pipeline. "
+        "help": "\"bam_name.Barcodes.stats\" file generated from the starsolo_count task in the coyote pipeline. "
     }
 }
 

@@ -117,18 +117,16 @@
         {{- vardict_somatic(pair, aligner='bwa') }}
     {% endif %}
 
-    {% if tasks[taskPrefix+"_somatic_snp_indel_caller_octopus"]|default(true) %}
+    {% if tasks[taskPrefix+"_somatic_snp_indel_caller_octopus"]|default(false) %}
         {{- octopus_somatic(pair, aligner='bwa') }}
     {% endif %}
 
     {% if tasks[taskPrefix+"_somatic_merge_vcfs_vcfMerger2"]|default(true) %}
         {{- vcfmerger2(pair, aligner='bwa', taskPrefix=taskPrefix) }}
     {% endif %}
-
-    {% if tasks[taskPrefix+"_somatic_structural_caller_delly"]|default(true) %}
+    {% if tasks[taskPrefix+"_somatic_structural_caller_delly"]|default(false) %}
         {{- delly_somatic(pair, aligner='bwa') }}
     {% endif %}
-
     {% if tasks[taskPrefix+"_somatic_structural_caller_gridss"]|default(false) %}
         {{- gridss_somatic(pair, aligner='bwa') }}
     {% endif %}

@@ -20,10 +20,11 @@
         {% set taskPrefix = 'Exome' %}
     {% elif sample.gltype in 'genome' %}
         {% set taskPrefix = 'Genome' %}
-
+        {#
         {% if tasks.Genome_constitutional_cna_caller_ichor|default(true) %}
            {{- ichorcna(sample, aligner='bwa', taskPrefix=taskPrefix) }}
         {% endif %}
+        #}
     {% endif %}
 
     {%- if sample.subGroup|lower != 'tumor' %}
@@ -51,10 +52,12 @@
         {%- if tasks[taskPrefix+"_constitutional_snp_indel_caller_octopus"]|default(false) %}
             {{- octopus_constitutional(sample, aligner='bwa', taskPrefix=taskPrefix) }}
         {% endif %}
+    {#
     {% elif sample.subGroup|lower == 'tumor' %}
         {%- if tasks[taskPrefix+"_tumor_mm_igtx_pairoscope"]|default(true) %}
             {{- mm_igtx_pairoscope(sample, aligner='bwa') }}
         {% endif %}
+    #}
     {% endif %}
 
 {% endfor %}

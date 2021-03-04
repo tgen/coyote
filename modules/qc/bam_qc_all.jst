@@ -104,7 +104,7 @@
     {# If the sample.gltype == 'exome' then intersect the capture space with the Non-N genomic space #}
     {% if sample.gltype == 'exome' %}
     bedtools intersect \
-      -a {{ constants.phoenix.reference_non_N_bed }} \
+      -a {{ constants.coyote.reference_non_N_bed }} \
       -b {{ sample.capture_kit.no_header_targets_interval_list }} \
       | \
     sort -k1,1 -k2,2n \
@@ -138,24 +138,21 @@
       --filtering-flag 256 \
       --coverage 1,2500,1 \
       {% if sample.gltype == 'rna' or sample.gltype == 'singlecellrna' %}
-      --reference "{{ constants.phoenix.star_fasta }}" \
-      --target-regions "{{ constants.phoenix.reference_non_N_bed }}" \
-      {% elif sample.gltype == 'chip' %}
-      --reference "{{ constants.phoenix.chip_fasta }}" \
-      --target-regions "{{ constants.phoenix.reference_non_N_bed }}" \
+      --reference "{{ constants.coyote.star_fasta }}" \
+      --target-regions "{{ constants.coyote.reference_non_N_bed }}" \
       {% else %}
         {% if sample.gltype == 'exome' %}
       --target-regions "{{ regions }}" \
         {% else %}
-      --target-regions "{{ constants.phoenix.reference_non_N_bed }}" \
+      --target-regions "{{ constants.coyote.reference_non_N_bed }}" \
         {% endif %}
-      --reference "{{ constants.phoenix.reference_fasta }}" \
+      --reference "{{ constants.coyote.reference_fasta }}" \
       {% endif %}
       > "{{ results_dir }}/{{ bam|basename }}.bamstats.txt"
 
     cd {{ results_dir }}
 
-    Rscript ${JS_PIPELINE_PATH}/required_scripts/{{ constants.phoenix.plotSamStats_Rscript }} \
+    Rscript ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.plotSamStats_Rscript }} \
         --samtoolsStatsFile={{ bam|basename }}.bamstats.txt \
         --bam={{ bam|basename }} \
         --sample={{ sample.name }} \
@@ -169,7 +166,7 @@
     {% if libraryCount == 1 %}
       cp {{ bam|basename }}.bamstats.txt {{ sample.name }}_{{ sample_lb }}.{{ aligner }}.bam.bamstats.txt
 
-      Rscript ${JS_PIPELINE_PATH}/required_scripts/{{ constants.phoenix.plotSamStats_Rscript }} \
+      Rscript ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.plotSamStats_Rscript }} \
         --samtoolsStatsFile={{ sample.name }}_{{ sample_lb }}.{{ aligner }}.bam.bamstats.txt \
         --bam={{ sample.name }}_{{ sample_lb }}.{{ aligner }}.bam \
         --sample={{ sample.name }} \
@@ -399,11 +396,9 @@
       --INPUT "{{ bam }}" \
       --OUTPUT "{{ results_dir }}/{{ bam|basename }}" \
       {% if sample.gltype == 'rna' or sample.gltype == 'singlecellrna' %}
-      --REFERENCE_SEQUENCE "{{ constants.phoenix.star_fasta }}" \
-      {% elif sample.gltype == 'chip' %}
-      --REFERENCE_SEQUENCE "{{ constants.phoenix.chip_fasta }}" \
+      --REFERENCE_SEQUENCE "{{ constants.coyote.star_fasta }}" \
       {% else %}
-      --REFERENCE_SEQUENCE "{{ constants.phoenix.reference_fasta }}" \
+      --REFERENCE_SEQUENCE "{{ constants.coyote.reference_fasta }}" \
       {% endif %}
       --METRIC_ACCUMULATION_LEVEL null \
       --METRIC_ACCUMULATION_LEVEL LIBRARY \
@@ -508,21 +503,17 @@
         --INPUT {{ bam }} \
         --OUTPUT "{{ input_base }}/{{ bam|basename }}" \
         {% if sample.gltype == 'rna' or sample.gltype == 'singlecellrna' %}
-        --REFERENCE_SEQUENCE "{{ constants.phoenix.star_fasta }}" \
-        {% elif sample.gltype == 'chip' %}
-        --REFERENCE_SEQUENCE "{{ constants.phoenix.chip_fasta }}" \
+        --REFERENCE_SEQUENCE "{{ constants.coyote.star_fasta }}" \
         {% else %}
-        --REFERENCE_SEQUENCE "{{ constants.phoenix.reference_fasta }}" \
+        --REFERENCE_SEQUENCE "{{ constants.coyote.reference_fasta }}" \
         {% endif %}
     {% endif %}
 
     gatk ConvertSequencingArtifactToOxoG \
       {% if sample.gltype == 'rna' or sample.gltype == 'singlecellrna' %}
-      --REFERENCE_SEQUENCE "{{ constants.phoenix.star_fasta }}" \
-      {% elif sample.gltype == 'chip' %}
-      --REFERENCE_SEQUENCE "{{ constants.phoenix.chip_fasta }}" \
+      --REFERENCE_SEQUENCE "{{ constants.coyote.star_fasta }}" \
       {% else %}
-      --REFERENCE_SEQUENCE "{{ constants.phoenix.reference_fasta }}" \
+      --REFERENCE_SEQUENCE "{{ constants.coyote.reference_fasta }}" \
       {% endif %}
       --INPUT_BASE "{{ input_base }}/{{ bam|basename }}"
 
@@ -609,13 +600,11 @@
       --min-MQ 0 \
       --min-BQ 13 \
       {% if sample.gltype == 'rna' or sample.gltype == 'singlecellrna' %}
-      --fasta-ref "{{ constants.phoenix.star_fasta }}" \
-      {% elif sample.gltype == 'chip' %}
-      --fasta-ref "{{ constants.phoenix.chip_fasta }}" \
+      --fasta-ref "{{ constants.coyote.star_fasta }}" \
       {% else %}
-      --fasta-ref "{{ constants.phoenix.reference_fasta }}" \
+      --fasta-ref "{{ constants.coyote.reference_fasta }}" \
       {% endif %}
-      --regions-file "{{ constants.phoenix.snpSniffer_sites }}" \
+      --regions-file "{{ constants.coyote.snpSniffer_sites }}" \
       {{ bam }} \
       | \
     bcftools call \
@@ -627,7 +616,6 @@
     bcftools annotate \
       --threads 2 \
       --include 'INFO/DP >= 5' \
-      --rename-chrs "{{ constants.phoenix.bcftools_annotate_contig_update_ucsc2ensembl }}" \
       --output-type v \
       --output "{{ results_dir }}/{{ bam|basename }}.snpSniffer.vcf"
 

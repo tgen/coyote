@@ -69,7 +69,7 @@
     if [ ${SEX} == "Female" ]
     then
       {# hg38tgen specific due to the chrY contig names   #}
-      grep -v "chrY" {{ temp_dir }}/pair_intersect.interval_list > {{ temp_dir }}/temp.interval_list
+      grep -v "Y" {{ temp_dir }}/pair_intersect.interval_list > {{ temp_dir }}/temp.interval_list
       mv {{ temp_dir }}/temp.interval_list {{ temp_dir }}/pair_intersect.interval_list
     fi
 
@@ -99,9 +99,9 @@
 
     if [ ${SEX} == "Female" ]
     then
-      INTERVALS={{ constants.phoenix.gatk_cnv_primary_contigs_female }}
+      INTERVALS={{ constants.coyote.gatk_cnv_primary_contigs_female }}
     else
-      INTERVALS={{ constants.phoenix.gatk_cnv_primary_contigs_male }}
+      INTERVALS={{ constants.coyote.gatk_cnv_primary_contigs_male }}
     fi
 
     {# Set sample specific variables #}
@@ -155,7 +155,7 @@
       --intervals ${INTERVALS} \
       --bin-length ${BIN_LENGTH} \
       {% endif %}
-      --reference {{ constants.phoenix.reference_fasta }} \
+      --reference {{ constants.coyote.reference_fasta }} \
       --output {{ temp_dir }}/preprocessed.interval_list \
       --interval-merging-rule OVERLAPPING_ONLY
 
@@ -163,21 +163,25 @@
     bcftools view \
       --exclude-types indels,mnps,ref,bnd,other \
       --genotype het \
-      --targets ^chrX:10001-2781479,chrX:155701383-156030895,chrY:10001-2781479,chrY:56887903-57217415 \
+      --targets ^X:340578-6642728 \
       --exclude "VAF<${MIN_VAF} | VAF>${MAX_VAF} | DP<${MIN_DP}" \
       --output-type v \
-      --output-file {{ temp_dir }}/{{ pair.normal.name }}.{{ aligner }}.preFilt.snps.vcf \
+      --output-file {{ temp_dir }}/{{ pair.normal.name }}.{{ aligner }}.snps.vcf \
       {{ deepvariant_vcf }}
 
     {# Filter out Blacklist regions (https://doi.org/10.1038/s41598-019-45839-z) and centromeres #}
+    {# Not possible for coyote yet, leaving code here for later use #}
+    {#
     bcftools view \
-      --targets-file ^{{ constants.phoenix.encode_denylist }} \
+      --targets-file ^{{ constants.coyote.encode_denylist }} \
       --output-type v \
       --output-file {{ temp_dir }}/{{ pair.normal.name }}.{{ aligner }}.snps.vcf \
       {{ temp_dir }}/{{ pair.normal.name }}.{{ aligner }}.preFilt.snps.vcf
-
+    #}
     {# Remove preFilt.snps.vcf #}
+    {#
     rm {{ temp_dir }}/{{ pair.normal.name }}.{{ aligner }}.preFilt.snps.vcf
+    #}
 
     {# Perform first round of CollectReadCounts on the normal for filtering intervals with little to no reads #}
     gatk --java-options "-Xmx12g" CollectReadCounts \
@@ -190,11 +194,11 @@
 
     gatk --java-options "-Xmx12g" AnnotateIntervals \
       --tmp-dir {{ temp_dir }}/temp/ \
-      --mappability-track {{ constants.phoenix.mappability_track }} \
+      {# --mappability-track {{ constants.coyote.mappability_track }} \ #}
       --intervals {{ temp_dir }}/preprocessed.interval_list \
       --output {{ temp_dir }}/PreFilter_anno_preprocessed.interval_list \
       --interval-merging-rule OVERLAPPING_ONLY \
-      --reference {{ constants.phoenix.reference_fasta }}
+      --reference {{ constants.coyote.reference_fasta }}
 
     gatk --java-options "-Xmx12g" FilterIntervals \
       --tmp-dir {{ temp_dir }}/temp/ \
@@ -224,7 +228,7 @@
     gatk --java-options "-Xmx12g" FilterIntervals \
       --tmp-dir {{ temp_dir }}/temp/ \
       --intervals {{ temp_dir }}/preprocessed_filt_map.interval_list \
-      --exclude-intervals {{ constants.phoenix.encode_denylist }} \
+      {# --exclude-intervals {{ constants.coyote.encode_denylist }} \ #}
       --input {{ temp_dir }}/{{ pair.normal.name }}.{{ aligner }}.counts.hdf5 \
       --interval-merging-rule OVERLAPPING_ONLY \
       --low-count-filter-count-threshold ${EXP_1X_COUNTS} \
@@ -240,7 +244,7 @@
       --intervals {{ temp_dir }}/preprocessed_filt.interval_list \
       --output {{ temp_dir }}/anno_preprocessed.interval_list \
       --interval-merging-rule OVERLAPPING_ONLY \
-      --reference {{ constants.phoenix.reference_fasta }}
+      --reference {{ constants.coyote.reference_fasta }}
 
 
 {# Step 2a #}
@@ -302,7 +306,7 @@
       --tmp-dir {{ temp_dir }}/temp2b/ \
       --input {{ normal_bam }} \
       --intervals {{ temp_dir }}/{{ pair.normal.name }}.{{ aligner }}.snps.vcf \
-      --reference {{ constants.phoenix.reference_fasta }} \
+      --reference {{ constants.coyote.reference_fasta }} \
       --output {{ results_dir }}/{{ pair.normal.name }}.{{ aligner }}.allelicCounts.tsv
 
 
@@ -365,7 +369,7 @@
       --tmp-dir {{ temp_dir }}/temp2d/ \
       --input {{ tumor_bam }} \
       --intervals {{ temp_dir }}/{{ pair.normal.name }}.{{ aligner }}.snps.vcf \
-      --reference {{ constants.phoenix.reference_fasta }} \
+      --reference {{ constants.coyote.reference_fasta }} \
       --output {{ results_dir }}/{{ pair.tumor.name }}.{{ aligner }}.allelicCounts.tsv
 
 
@@ -538,8 +542,23 @@
     - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr20.png
     - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr21.png
     - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr22.png
+    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr23.png
+    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr24.png
+    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr25.png
+    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr26.png
+    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr27.png
+    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr28.png
+    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr29.png
+    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr30.png
+    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr31.png
+    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr32.png
+    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr33.png
+    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr34.png
+    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr35.png
+    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr36.png
+    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr37.png
+    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chr38.png
     - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chrX.png
-    - {{ results_dir }}/plots/{{ pair.name }}.{{ aligner }}_chrY.png
   cpus: 1
   mem: 16G
   walltime: "24:00:00"
@@ -570,32 +589,28 @@
 
     if [ ${SEX} == "Male" ]
     then
-      gawk -F'\t' '{ if ($1 == "chrX" || $1 == "chrY") { $4 = $4-1} ; { OFS = "\t" ; print $0 }}' {{ results_dir }}/{{ pair.name }}.{{ aligner }}.denoisedCR.tsv > \
+      gawk -F'\t' '{ if ($1 == "X" || $1 == "Y") { $4 = $4-1} ; { OFS = "\t" ; print $0 }}' {{ results_dir }}/{{ pair.name }}.{{ aligner }}.denoisedCR.tsv > \
         {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.denoisedCR.genderCorrected.tsv
 
-      gawk -F'\t' '{ if ($1 == "chrX" || $1 == "chrY") { $6 = $6-1 ; $7 = $7-1 ; $8 = $8-1 } ; { OFS = "\t" ; print $0 }}' {{ results_dir }}/{{ pair.name }}.{{ aligner }}.modelFinal.seg > \
+      gawk -F'\t' '{ if ($1 == "X" || $1 == "Y") { $6 = $6-1 ; $7 = $7-1 ; $8 = $8-1 } ; { OFS = "\t" ; print $0 }}' {{ results_dir }}/{{ pair.name }}.{{ aligner }}.modelFinal.seg > \
         {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.modelFinal.genderCorrected.seg
 
-      contig_names_string="chr1CONTIG_DELIMITERchr2CONTIG_DELIMITERchr3CONTIG_DELIMITERchr4CONTIG_DELIMITERchr5CONTIG_DELIMITERchr6CONTIG_DELIMITERchr7CONTIG_DELIMITERchr8CONTIG_DELIMITERchr9CONTIG_DELIMITERchr10CONTIG_DELIMITERchr11CONTIG_DELIMITERchr12CONTIG_DELIMITERchr13CONTIG_DELIMITERchr14CONTIG_DELIMITERchr15CONTIG_DELIMITERchr16CONTIG_DELIMITERchr17CONTIG_DELIMITERchr18CONTIG_DELIMITERchr19CONTIG_DELIMITERchr20CONTIG_DELIMITERchr21CONTIG_DELIMITERchr22CONTIG_DELIMITERchrXCONTIG_DELIMITERchrY"
-      contig_lengths_string="248956422CONTIG_DELIMITER242193529CONTIG_DELIMITER198295559CONTIG_DELIMITER190214555CONTIG_DELIMITER181538259CONTIG_DELIMITER170805979CONTIG_DELIMITER159345973CONTIG_DELIMITER145138636CONTIG_DELIMITER138394717CONTIG_DELIMITER133797422CONTIG_DELIMITER135086622CONTIG_DELIMITER133275309CONTIG_DELIMITER114364328CONTIG_DELIMITER107043718CONTIG_DELIMITER101991189CONTIG_DELIMITER90338345CONTIG_DELIMITER83257441CONTIG_DELIMITER80373285CONTIG_DELIMITER58617616CONTIG_DELIMITER64444167CONTIG_DELIMITER46709983CONTIG_DELIMITER50818468CONTIG_DELIMITER156040895CONTIG_DELIMITER57227415"
+      contig_names_string="1CONTIG_DELIMITER2CONTIG_DELIMITER3CONTIG_DELIMITER4CONTIG_DELIMITER5CONTIG_DELIMITER6CONTIG_DELIMITER7CONTIG_DELIMITER8CONTIG_DELIMITER9CONTIG_DELIMITER10CONTIG_DELIMITER11CONTIG_DELIMITER12CONTIG_DELIMITER13CONTIG_DELIMITER14CONTIG_DELIMITER15CONTIG_DELIMITER16CONTIG_DELIMITER17CONTIG_DELIMITER18CONTIG_DELIMITER19CONTIG_DELIMITER20CONTIG_DELIMITER21CONTIG_DELIMITER22CONTIG_DELIMITER23CONTIG_DELIMITER24CONTIG_DELIMITER25CONTIG_DELIMITER26CONTIG_DELIMITER27CONTIG_DELIMITER28CONTIG_DELIMITER29CONTIG_DELIMITER30CONTIG_DELIMITER31CONTIG_DELIMITER32CONTIG_DELIMITER33CONTIG_DELIMITER34CONTIG_DELIMITER35CONTIG_DELIMITER36CONTIG_DELIMITER37CONTIG_DELIMITER38CONTIG_DELIMITERX"
+      contig_lengths_string="122678785CONTIG_DELIMITER85426708CONTIG_DELIMITER91889043CONTIG_DELIMITER88276631CONTIG_DELIMITER88915250CONTIG_DELIMITER77573801CONTIG_DELIMITER80974532CONTIG_DELIMITER74330416CONTIG_DELIMITER61074082CONTIG_DELIMITER69331447CONTIG_DELIMITER74389097CONTIG_DELIMITER72498081CONTIG_DELIMITER63241923CONTIG_DELIMITER60966679CONTIG_DELIMITER64190966CONTIG_DELIMITER59632846CONTIG_DELIMITER64289059CONTIG_DELIMITER55844845CONTIG_DELIMITER53741614CONTIG_DELIMITER58134056CONTIG_DELIMITER50858623CONTIG_DELIMITER61439934CONTIG_DELIMITER52294480CONTIG_DELIMITER47698779CONTIG_DELIMITER51628933CONTIG_DELIMITER38964690CONTIG_DELIMITER45876710CONTIG_DELIMITER41182112CONTIG_DELIMITER41845238CONTIG_DELIMITER40214260CONTIG_DELIMITER39895921CONTIG_DELIMITER38810281CONTIG_DELIMITER31377067CONTIG_DELIMITER42124431CONTIG_DELIMITER26524999CONTIG_DELIMITER30810995CONTIG_DELIMITER30902991CONTIG_DELIMITER23914537CONTIG_DELIMITER123869142"
     else
-      touch {{ temp_dir }}/results/plots/{{ pair.name }}.{{ aligner }}_chrY.png
       cp {{ results_dir }}/{{ pair.name }}.{{ aligner }}.denoisedCR.tsv {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.denoisedCR.genderCorrected.tsv
       cp {{ results_dir }}/{{ pair.name }}.{{ aligner }}.modelFinal.seg {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.modelFinal.genderCorrected.seg
-      contig_names_string="chr1CONTIG_DELIMITERchr2CONTIG_DELIMITERchr3CONTIG_DELIMITERchr4CONTIG_DELIMITERchr5CONTIG_DELIMITERchr6CONTIG_DELIMITERchr7CONTIG_DELIMITERchr8CONTIG_DELIMITERchr9CONTIG_DELIMITERchr10CONTIG_DELIMITERchr11CONTIG_DELIMITERchr12CONTIG_DELIMITERchr13CONTIG_DELIMITERchr14CONTIG_DELIMITERchr15CONTIG_DELIMITERchr16CONTIG_DELIMITERchr17CONTIG_DELIMITERchr18CONTIG_DELIMITERchr19CONTIG_DELIMITERchr20CONTIG_DELIMITERchr21CONTIG_DELIMITERchr22CONTIG_DELIMITERchrX"
-      contig_lengths_string="248956422CONTIG_DELIMITER242193529CONTIG_DELIMITER198295559CONTIG_DELIMITER190214555CONTIG_DELIMITER181538259CONTIG_DELIMITER170805979CONTIG_DELIMITER159345973CONTIG_DELIMITER145138636CONTIG_DELIMITER138394717CONTIG_DELIMITER133797422CONTIG_DELIMITER135086622CONTIG_DELIMITER133275309CONTIG_DELIMITER114364328CONTIG_DELIMITER107043718CONTIG_DELIMITER101991189CONTIG_DELIMITER90338345CONTIG_DELIMITER83257441CONTIG_DELIMITER80373285CONTIG_DELIMITER58617616CONTIG_DELIMITER64444167CONTIG_DELIMITER46709983CONTIG_DELIMITER50818468CONTIG_DELIMITER156040895"
+      contig_names_string="1CONTIG_DELIMITER2CONTIG_DELIMITER3CONTIG_DELIMITER4CONTIG_DELIMITER5CONTIG_DELIMITER6CONTIG_DELIMITER7CONTIG_DELIMITER8CONTIG_DELIMITER9CONTIG_DELIMITER10CONTIG_DELIMITER11CONTIG_DELIMITER12CONTIG_DELIMITER13CONTIG_DELIMITER14CONTIG_DELIMITER15CONTIG_DELIMITER16CONTIG_DELIMITER17CONTIG_DELIMITER18CONTIG_DELIMITER19CONTIG_DELIMITER20CONTIG_DELIMITER21CONTIG_DELIMITER22CONTIG_DELIMITER23CONTIG_DELIMITER24CONTIG_DELIMITER25CONTIG_DELIMITER26CONTIG_DELIMITER27CONTIG_DELIMITER28CONTIG_DELIMITER29CONTIG_DELIMITER30CONTIG_DELIMITER31CONTIG_DELIMITER32CONTIG_DELIMITER33CONTIG_DELIMITER34CONTIG_DELIMITER35CONTIG_DELIMITER36CONTIG_DELIMITER37CONTIG_DELIMITER38CONTIG_DELIMITERX"
+      contig_lengths_string="122678785CONTIG_DELIMITER85426708CONTIG_DELIMITER91889043CONTIG_DELIMITER88276631CONTIG_DELIMITER88915250CONTIG_DELIMITER77573801CONTIG_DELIMITER80974532CONTIG_DELIMITER74330416CONTIG_DELIMITER61074082CONTIG_DELIMITER69331447CONTIG_DELIMITER74389097CONTIG_DELIMITER72498081CONTIG_DELIMITER63241923CONTIG_DELIMITER60966679CONTIG_DELIMITER64190966CONTIG_DELIMITER59632846CONTIG_DELIMITER64289059CONTIG_DELIMITER55844845CONTIG_DELIMITER53741614CONTIG_DELIMITER58134056CONTIG_DELIMITER50858623CONTIG_DELIMITER61439934CONTIG_DELIMITER52294480CONTIG_DELIMITER47698779CONTIG_DELIMITER51628933CONTIG_DELIMITER38964690CONTIG_DELIMITER45876710CONTIG_DELIMITER41182112CONTIG_DELIMITER41845238CONTIG_DELIMITER40214260CONTIG_DELIMITER39895921CONTIG_DELIMITER38810281CONTIG_DELIMITER31377067CONTIG_DELIMITER42124431CONTIG_DELIMITER26524999CONTIG_DELIMITER30810995CONTIG_DELIMITER30902991CONTIG_DELIMITER23914537CONTIG_DELIMITER123869142"
     fi
 
-    for CHR in {1..24}
+    for CHR in {1..39}
     do
-      if [[ ${CHR} -eq "23" ]]
+      if [[ ${CHR} -eq "39" ]]
       then
-        CHR="chrX"
-      elif [[ ${CHR} -eq "24" ]]
-      then
-        CHR="chrY"
+        CHR="X"
       else
-        CHR="chr${CHR}"
+        CHR="${CHR}"
       fi
 
       declare START_${CHR}=$(gawk -F'\t' -v CHROM=${CHR} '$1 == CHROM' {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.modelFinal.genderCorrected.seg | sort -k2,2n | awk -F'\t' 'NR == 1 { print $2 }')
@@ -604,24 +619,26 @@
       export STOP_${CHR}
     done
 
-    for CHR in {1..24}
+    for CHR in {1..39}
     do
-      # Get centromere start and stop
-      if [[ $CHR -eq "23" ]]
+      if [[ ${CHR} -eq "39" ]]
       then
-        CHR="chrX"
-      elif [[ $CHR -eq "24" ]]
-      then
-        CHR="chrY"
+        CHR="X"
       else
-        CHR="chr${CHR}"
+        CHR="${CHR}"
       fi
 
       eval "START=\${START_${CHR}}"
       eval "STOP=\${STOP_${CHR}}"
 
-      START_C=$(gawk -v CHR=$CHR '$1==CHR { print $2 }' {{ constants.phoenix.centromere }})
-      STOP_C=$(gawk -v CHR=$CHR '$1==CHR { print $3 }' {{ constants.phoenix.centromere }})
+      {# Centromeres are unknown in canine, setting start and stop to 0-1 #}
+      START_C=0
+      STOP_C=1
+      {# Here is the original code in case we define centromeres later #}
+      {#
+      START_C=$(gawk -v CHR=$CHR '$1==CHR { print $2 }' {{ constants.coyote.centromere }})
+      STOP_C=$(gawk -v CHR=$CHR '$1==CHR { print $3 }' {{ constants.coyote.centromere }})
+      #}
 
       if [[ ${START} -ge ${START_C} ]]
       then
@@ -678,9 +695,11 @@
       mv {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.modelFinal.genderCorrected.seg.temp {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.modelFinal.genderCorrected.seg
     done
 
-    python ${JS_PIPELINE_PATH}/required_scripts/{{ constants.phoenix.cna_seg_extend }} {{ constants.phoenix.centromere }} {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.modelFinal.genderCorrected.seg
+    {# Skipping seg extend for now, missing centromere file
+    python ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.cna_seg_extend }} {{ constants.coyote.centromere }} {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.modelFinal.genderCorrected.seg
+    #}
 
-    Rscript ${JS_PIPELINE_PATH}/required_scripts/{{ constants.phoenix.plotCNVplus_Rscript }} \
+    Rscript ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.plotCNVplus_Rscript }} \
       --hetDPfilter 1 \
       --hetAFlow 0.45 \
       --hetAFhigh 0.55 \

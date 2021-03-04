@@ -177,56 +177,56 @@ fileTypes = {
     "bt_cell_counts": {
         "btCellCounts": True,
         "help": "\"bam_name.bam.BTcell.loci.counts.txt\" file generated from rna_getBTcellLociCounts task in the "
-                "phoenix pipeline "
+                "coyote pipeline "
     },
     "sex_check": {
         "sexCheck": True,
-        "help": "\"bam_name.bam.sexCheck.txt\" file generated from freebayes_sex_check task in the phoenix pipeline."
+        "help": "\"bam_name.bam.sexCheck.txt\" file generated from freebayes_sex_check task in the coyote pipeline."
     },
     "oxog_metrics_summary": {
         "oxogMetricsSummary": True,
         "help": "\"bam_name.bam.oxog_metrics_summary.tsv\" file generated from gatk_convertsequencingarrtifacttooxog "
-                "task in the phoenix pipeline. "
+                "task in the coyote pipeline. "
     },
     "snpsniffer_summary": {
         "snpSnifferSummary": True,
         "help": "\"project_name.SnpSniffer_Mismatch_Summary.tsv\" file generated from snpsniffer_summary task in the "
-                "phoenix pipeline. "
+                "coyote pipeline. "
     },
     "cellranger_metrics": {
         "cellrangerMetrics": True,
         "help": "\"bam_name.metrics_summary.csv\" file generated from the cellranger task in the "
-                "phoenix pipeline. "
+                "coyote pipeline. "
     },
     "cellranger_vdj_metrics": {
         "cellrangerVDJMetrics": True,
         "help": "\"bam_name.metrics_summary.csv\" file generated from the cellranger task in the "
-                "phoenix pipeline. "
+                "coyote pipeline. "
     },
     "starsolo_metrics": {
         "starsoloMetrics": True,
         "help": "\"bam_name.Barcodes.stats\" file generated from the starsolo_count task in the "
-                "phoenix pipeline. "
+                "coyote pipeline. "
     },
     "samtools_baseQualityYield_summary": {
         "samtool": True,
         "help": "\"bam_name.samtools_baseQualityYield_summary.tsv\" file generated from the samtools_stats task in "
-                "the phoenix pipeline. "
+                "the coyote pipeline. "
     },
     "samtools_coverage_summary": {
         "samtool": True,
         "help": "\"bam_name.samtools_coverage_summary.tsv\" file generated from the samtools_stats task in the "
-                "phoenix pipeline. "
+                "coyote pipeline. "
     },
     "samtools_insertSize_summary": {
         "samtool": True,
         "help": "\"bam_name.samtools_insertSize_summary.tsv\" file generated from the samtools_stats task in the "
-                "phoenix pipeline. "
+                "coyote pipeline. "
     },
     "samtools_summaryNumbers_summary": {
         "samtool": True,
         "help": "\"bam_name.samtools_summaryNumbers_summary.tsv\" file generated from the samtools_stats task in the "
-                "phoenix pipeline. "
+                "coyote pipeline. "
     }
 }
 

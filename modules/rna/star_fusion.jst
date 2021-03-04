@@ -47,7 +47,7 @@
     mkdir -p {{ results_dir }}
 
     STAR \
-      --genomeDir {{ constants.phoenix.starfusion_index }}/ref_genome.fa.star.idx  \
+      --genomeDir {{ constants.coyote.starfusion_index }}/ref_genome.fa.star.idx  \
       --outReadsUnmapped None  \
       --chimSegmentMin 12  \
       --chimJunctionOverhangMin 12  \
@@ -119,16 +119,16 @@
     module load {{ constants.tools.star_fusion.module }}
     sf_path=$(dirname `which STAR-Fusion`)
 
-    export CTAT_GENOME_LIB={{ constants.phoenix.starfusion_index }}
+    export CTAT_GENOME_LIB={{ constants.coyote.starfusion_index }}
 
     ${sf_path}/util/STAR-Fusion.map_chimeric_reads_to_genes \
-      --genome_lib_dir {{ constants.phoenix.starfusion_index }} \
+      --genome_lib_dir {{ constants.coyote.starfusion_index }} \
       -J {{ results_dir }}/{{ sample.name }}_Chimeric.out.junction \
       > {{ temp_dir }}/star-fusion.preliminary/star-fusion.junction_breakpts_to_genes.txt
 
     ${sf_path}/util/STAR-Fusion.handle_multimapping_reads \
       -J {{ temp_dir }}/star-fusion.preliminary/star-fusion.junction_breakpts_to_genes.txt \
-      --genome_lib_dir {{ constants.phoenix.starfusion_index }} \
+      --genome_lib_dir {{ constants.coyote.starfusion_index }} \
       --filt_file {{ temp_dir }}/star-fusion.preliminary/star-fusion.junction_breakpts_to_genes.txt.fail \
       -M 50 \
       > {{ temp_dir }}/star-fusion.preliminary/star-fusion.junction_breakpts_to_genes.txt.pass
@@ -150,52 +150,27 @@
       --min_alt_pct_junction 10 \
       --aggregate_novel_junction_dist 5 \
       --min_spanning_frags_only 5 \
-      --genome_lib_dir {{ constants.phoenix.starfusion_index }} \
+      --genome_lib_dir {{ constants.coyote.starfusion_index }} \
       --out_prefix {{ temp_dir }}/star-fusion.preliminary/star-fusion
 
-    {% if studyDisease == "Multiple Myeloma" | default(false) %}
-    JUNCTION_READS=$(tail -n1 {{ results_dir }}/{{ sample.name }}_Chimeric.out.junction | gawk '{ print $3 }')
-    {#
-      samtools view
-        -c        print only the count of matching records
-        -f INT    only include reads with all  of the FLAGs in INT present
-        -F INT    only include reads with none of the FLAGS in INT present
-
-      -f 65     = 0x40 and 0x1
-      -F 2304   = 0x100 and 0x800
-      0x1	PAIRED	paired-end (or multiple-segment) sequencing technology
-      0x40	READ1	the first segment in the template
-      0x100	SECONDARY	secondary alignment
-      0x800	SUPPLEMENTARY	supplementary alignment
-    #}
-    IG_READS=$(samtools view \
-      --threads 2 \
-      -c -f 65 -F 2304 \
-      {{ temp_dir }}/{{ sample.name }}.Aligned.sorted.bam \
-      chr2:88857160-90367699 \
-      chr14:105583730-106879812 \
-      chr22:21991098-22923034)
-    NREADS=$((JUNCTION_READS-IG_READS))
-    {% else %}
     NREADS=$(tail -n1 {{ results_dir }}/{{ sample.name }}_Chimeric.out.junction | gawk '{ print $3 }')
-    {% endif %}
 
     ${sf_path}/util/incorporate_FFPM_into_final_report.pl \
       {{ temp_dir }}/star-fusion.preliminary/star-fusion.fusion_candidates.preliminary.filtered $NREADS \
       > {{ temp_dir }}/star-fusion.preliminary/star-fusion.fusion_candidates.preliminary.filtered.FFPM
 
     ${sf_path}/util/append_breakpoint_junction_info.pl \
-      {{ temp_dir }}/star-fusion.preliminary/star-fusion.fusion_candidates.preliminary.filtered.FFPM {{ constants.phoenix.starfusion_index }} \
+      {{ temp_dir }}/star-fusion.preliminary/star-fusion.fusion_candidates.preliminary.filtered.FFPM {{ constants.coyote.starfusion_index }} \
       > {{ temp_dir }}/star-fusion.preliminary/star-fusion.fusion_candidates.preliminary.wSpliceInfo
 
     ${sf_path}/FusionAnnotator/FusionAnnotator \
-      --genome_lib_dir {{ constants.phoenix.starfusion_index }} \
+      --genome_lib_dir {{ constants.coyote.starfusion_index }} \
       --annotate {{ temp_dir }}/star-fusion.preliminary/star-fusion.fusion_candidates.preliminary.wSpliceInfo \
       > {{ temp_dir }}/star-fusion.preliminary/star-fusion.fusion_candidates.preliminary.wSpliceInfo.wAnnot
 
     ${sf_path}/FusionFilter/util/filter_by_annotation_rules.pl \
       --fusions {{ temp_dir }}/star-fusion.preliminary/star-fusion.fusion_candidates.preliminary.wSpliceInfo.wAnnot \
-      --genome_lib_dir {{ constants.phoenix.starfusion_index }}
+      --genome_lib_dir {{ constants.coyote.starfusion_index }}
 
     {# cp filtered intermediate file for later development usage #}
     cp {{ temp_dir }}/star-fusion.preliminary/star-fusion.fusion_candidates.preliminary.wSpliceInfo.wAnnot.annot_filter.pass {{ results_dir }}/{{ sample.name }}_star_fusion.fusion_candidates.preliminary.wSpliceInfo.wAnnot.annot_filter.pass
@@ -212,7 +187,7 @@
 
     ${sf_path}/FusionAnnotator/util/fusion_to_coding_region_effect.pl \
       --fusions {{ results_dir }}/{{ sample.name }}_star_fusion.fusion_predictions.abridged.tsv \
-      --genome_lib_dir {{ constants.phoenix.starfusion_index }} \
+      --genome_lib_dir {{ constants.coyote.starfusion_index }} \
       > {{ results_dir }}/{{ sample.name }}_star_fusion.fusion_predictions.abridged.coding_effect.tsv
 
     ${sf_path}/util/get_FUSION_EVIDENCE_fastqs.pl \
@@ -276,7 +251,7 @@
           --vis \
           --max_promiscuity 10 \
           --output_dir FusionInspector-inspect \
-          --genome_lib_dir {{ constants.phoenix.starfusion_index }} \
+          --genome_lib_dir {{ constants.coyote.starfusion_index }} \
           --CPU 2 \
           --only_fusion_reads \
           --fusion_contigs_only \
@@ -285,19 +260,26 @@
           --no_FFPM \
           --include_Trinity \
           --annotate \
-          --examine_coding_effect
-        {# Moving fusion inspector files to results dir #}
-        mv FusionInspector-inspect/finspector.bed ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.bed
-        mv FusionInspector-inspect/finspector.fa ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.fa
-        mv FusionInspector-inspect/finspector.fusion_inspector_web.html ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.fusion_inspector_web.html
-        mv FusionInspector-inspect/finspector.fusion_inspector_web.json ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.fusion_inspector_web.json
-        mv FusionInspector-inspect/finspector.junction_reads.bam ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.junction_reads.bam
-        mv FusionInspector-inspect/finspector.junction_reads.bam.bai ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.junction_reads.bam.bai
-        mv FusionInspector-inspect/finspector.spanning_reads.bam ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.spanning_reads.bam
-        mv FusionInspector-inspect/finspector.spanning_reads.bam.bai ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.spanning_reads.bam.bai
-        mv FusionInspector-inspect/finspector.gmap_trinity_GG.fusions.gff3.bed.sorted.bed.gz ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.gmap_trinity_GG.fusions.gff3.bed.sorted.bed.gz
-        mv FusionInspector-inspect/finspector.gmap_trinity_GG.fusions.gff3.bed.sorted.bed.gz.tbi ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.gmap_trinity_GG.fusions.gff3.bed.sorted.bed.gz.tbi
-        mv FusionInspector-inspect/fi_workdir/trinity_GG/Trinity-GG.fasta ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_Trinity-GG.fasta
+          --examine_coding_effect || error=true
+
+        if [[ -v error ]]
+        then
+          echo "Fusion-inspector exited with an error. This likely is a known issue related to the gtf."
+          echo "Fusion-inpsector will continue despite an error for any given fusion, however if all fusions fail, then fusion-inspector will exit with a non-zero exit code"
+        else
+          {# Moving fusion inspector files to results dir #}
+          mv FusionInspector-inspect/finspector.bed ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.bed
+          mv FusionInspector-inspect/finspector.fa ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.fa
+          mv FusionInspector-inspect/finspector.fusion_inspector_web.html ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.fusion_inspector_web.html
+          mv FusionInspector-inspect/finspector.fusion_inspector_web.json ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.fusion_inspector_web.json
+          mv FusionInspector-inspect/finspector.junction_reads.bam ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.junction_reads.bam
+          mv FusionInspector-inspect/finspector.junction_reads.bam.bai ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.junction_reads.bam.bai
+          mv FusionInspector-inspect/finspector.spanning_reads.bam ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.spanning_reads.bam
+          mv FusionInspector-inspect/finspector.spanning_reads.bam.bai ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.spanning_reads.bam.bai
+          mv FusionInspector-inspect/finspector.gmap_trinity_GG.fusions.gff3.bed.sorted.bed.gz ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.gmap_trinity_GG.fusions.gff3.bed.sorted.bed.gz
+          mv FusionInspector-inspect/finspector.gmap_trinity_GG.fusions.gff3.bed.sorted.bed.gz.tbi ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_finspector.gmap_trinity_GG.fusions.gff3.bed.sorted.bed.gz.tbi
+          mv FusionInspector-inspect/fi_workdir/trinity_GG/Trinity-GG.fasta ${PROJECT_ROOT}/{{ results_dir }}/{{ sample.name }}_Trinity-GG.fasta
+        fi
     fi
 
     {# Remove the remaining files #}
@@ -329,7 +311,7 @@
     samtools view \
       -C \
       -@ 8 \
-      --reference "{{ constants.phoenix.star_fasta }}" \
+      --reference "{{ constants.coyote.star_fasta }}" \
       -o "{{ cram_path }}" \
       "{{ bam_path }}"
 

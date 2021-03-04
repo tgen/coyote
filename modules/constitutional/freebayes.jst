@@ -9,7 +9,7 @@
 {%- set all_vcf %}{{ results_dir }}/{{ sample.name }}.{{ aligner }}.freebayes.all.vcf.gz{% endset %}
 {%- set pass_vcf %}{{ results_dir }}/{{ sample.name }}.{{ aligner }}.freebayes.pass.vcf.gz{% endset %}
 
-{% for batch in constants.phoenix.calling_intervals %}
+{% for batch in constants.coyote.calling_intervals %}
 
 - name: freebayes_{{ sample.name }}_{{ aligner }}_{{ loop.index }}
   tags: [{{ sample.gltype}}, constitutional, snp_indel_caller, freebayes, {{ sample.name }}]
@@ -35,7 +35,7 @@
 
     freebayes \
       --bam "{{ bam }}" \
-      --fasta-reference "{{ constants.phoenix.reference_fasta }}" \
+      --fasta-reference "{{ constants.coyote.reference_fasta }}" \
       --targets "{{ temp_dir }}/{{ loop.index }}.bed" \
       --ploidy 2 \
       --min-repeat-entropy 1 \
@@ -48,7 +48,7 @@
   tags: [{{ sample.gltype}}, constitutional, snp_indel_caller, freebayes, {{ sample.name }}]
   reset: predecessors
   input:
-    {% for batch in constants.phoenix.calling_intervals %}
+    {% for batch in constants.coyote.calling_intervals %}
     - {{ temp_dir }}/{{ loop.index }}.vcf
     {% endfor %}
   output:
@@ -68,7 +68,7 @@
     bcftools concat \
       --output-type z \
       --output "{{ all_vcf }}" \
-      {% for batch in constants.phoenix.calling_intervals %}
+      {% for batch in constants.coyote.calling_intervals %}
       {% if not loop.last %}
       "{{ temp_dir }}/{{ loop.index }}.vcf" \
       {% else %}

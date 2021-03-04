@@ -34,93 +34,13 @@
 
     bcftools index --threads 4 --force "{{ output_bcf }}"
 
-    {% if tasks[taskPrefix+"_"+analysis_type+"_annotate_vcfs_bcftools_dbsnp_v152"]|default(true) %}
+    {% if tasks[taskPrefix+"_"+analysis_type+"_annotate_vcfs_bcftools_eva_gca"]|default(true) %}
     {# annotate with dbsnp #}
     bcftools annotate \
       --threads 4 \
-      --annotations "{{ constants.phoenix.dbsnp_v152 }}" \
-      --mark-sites DBSNPv152 \
+      --annotations "{{ constants.coyote.eva_gca }}" \
+      --mark-sites GCA_2285.2 \
       --columns ID \
-      --output-type b \
-      --output "{{ temp_dir }}/tempout.bcf" \
-      "{{ output_bcf }}"
-
-    {# move tempout to tempin for next step #}
-    mv "{{ temp_dir }}/tempout.bcf" "{{ output_bcf }}"
-
-    bcftools index --threads 4 --force "{{ output_bcf }}"
-    {% endif %}
-
-    {% if tasks[taskPrefix+"_"+analysis_type+"_annotate_vcfs_bcftools_gnomad_exome_v2_1_1_liftover"]|default(true) %}
-    {# annotate with gnomad exome #}
-    bcftools annotate \
-      --threads 4 \
-      --annotations "{{ constants.phoenix.gnomad_exome_v2_1_1_liftover }}" \
-      --mark-sites GNOMAD_EXOME \
-      --output-type b \
-      --output "{{ temp_dir }}/tempout.bcf" \
-      "{{ output_bcf }}"
-
-    {# move tempout to tempin for next step #}
-    mv "{{ temp_dir }}/tempout.bcf" "{{ output_bcf }}"
-
-    bcftools index --threads 4 --force "{{ output_bcf }}"
-    {% endif %}
-
-    {% if tasks[taskPrefix+"_"+analysis_type+"_annotate_vcfs_bcftools_gnomad_genome_v3_0"]|default(true) %}
-    {# annotate with gnomad genome #}
-    bcftools annotate \
-      --threads 4 \
-      --annotations "{{ constants.phoenix.gnomad_genome_v3_0 }}" \
-      --mark-sites GNOMAD_GENOME \
-      --output-type b \
-      --output "{{ temp_dir }}/tempout.bcf" \
-      "{{ output_bcf }}"
-
-    {# move tempout to tempin for next step #}
-    mv "{{ temp_dir }}/tempout.bcf" "{{ output_bcf }}"
-
-    bcftools index --threads 4 --force "{{ output_bcf }}"
-    {% endif %}
-
-    {% if tasks[taskPrefix+"_"+analysis_type+"_annotate_vcfs_bcftools_cosmic_coding_v89"]|default(true) %}
-    {# annotate with cosmic #}
-    bcftools annotate \
-      --threads 4 \
-      --annotations "{{ constants.phoenix.cosmic_coding_v90 }}" \
-      --mark-sites COSMIC \
-      --output-type b \
-      --output "{{ temp_dir }}/tempout.bcf" \
-      "{{ output_bcf }}"
-
-    {# move tempout to tempin for next step #}
-    mv "{{ temp_dir }}/tempout.bcf" "{{ output_bcf }}"
-
-    bcftools index --threads 4 --force "{{ output_bcf }}"
-    {% endif %}
-
-    {% if tasks[taskPrefix+"_"+analysis_type+"_annotate_vcfs_bcftools_cosmic_noncoding_v89"]|default(true) %}
-    {# annotate with cosmic_nc #}
-    bcftools annotate \
-      --threads 4 \
-      --annotations "{{ constants.phoenix.cosmic_noncoding_v90 }}" \
-      --mark-sites COSMIC_NC \
-      --output-type b \
-      --output "{{ temp_dir }}/tempout.bcf" \
-      "{{ output_bcf }}"
-
-    {# move tempout to tempin for next step #}
-    mv "{{ temp_dir }}/tempout.bcf" "{{ output_bcf }}"
-
-    bcftools index --threads 4 --force "{{ output_bcf }}"
-    {% endif %}
-
-    {% if tasks[taskPrefix+"_"+analysis_type+"_annotate_vcfs_bcftools_clinvar_20190715"]|default(true) %}
-    {# annotate with clinvar #}
-    bcftools annotate \
-      --threads 4 \
-      --annotations "{{ constants.phoenix.clinvar_20190715 }}" \
-      --mark-sites CLINVAR \
       --output-type b \
       --output "{{ temp_dir }}/tempout.bcf" \
       "{{ output_bcf }}"

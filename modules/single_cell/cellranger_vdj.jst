@@ -85,7 +85,7 @@
         --localmem 80 \
         --id "{{ sample.name }}" \
         --fastqs . \
-        --reference "{{ constants.phoenix.cellranger_vdj_reference }}" \
+        --reference "{{ constants.coyote.cellranger_vdj_reference }}" \
         --sample "{{ samples_list|join(',') }}" )
 
     mv {{ cellranger_out }}/all_contig_annotations.bed {{ outdir }}/{{ sample.name }}.cellranger_vdj.all_contig_annotations.bed

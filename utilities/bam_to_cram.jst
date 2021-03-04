@@ -24,11 +24,9 @@
       -C \
       -@ 8 \
       {% if sample.gltype == 'rna' or sample.gltype == 'singlecellrna' %}
-      --reference "{{ constants.phoenix.star_fasta }}" \
-      {% elif sample.gltype == 'chip' %}
-      --reference "{{ constants.phoenix.chip_fasta }}" \
+      --reference "{{ constants.coyote.star_fasta }}" \
       {% else %}
-      --reference "{{ constants.phoenix.reference_fasta }}" \
+      --reference "{{ constants.coyote.reference_fasta }}" \
       {% endif %}
       -o "{{ cram_path }}" \
       "{{ bam_path }}"

@@ -64,9 +64,9 @@
       If the star_index directory exists then set the global varaible for it or else
       make the star_index on the with the working temp folder for use with STAR
     #}
-    if [ -d {{ constants.phoenix.star_indices_path }}/{{ star_index_size }} ]
+    if [ -d {{ constants.coyote.star_indices_path }}/{{ star_index_size }} ]
     then
-      STAR_INDEX={{ constants.phoenix.star_indices_path }}/{{ star_index_size }}
+      STAR_INDEX={{ constants.coyote.star_indices_path }}/{{ star_index_size }}
     else
       CURRENT_DIR=`pwd`
 
@@ -79,8 +79,8 @@
         --genomeDir ../star_index \
         --runThreadN 19 \
         --sjdbOverhang {{ sjdb_overhang }} \
-        --genomeFastaFiles {{ constants.phoenix.star_fasta }} \
-        --sjdbGTFfile {{ constants.phoenix.gtf }}
+        --genomeFastaFiles {{ constants.coyote.star_fasta }} \
+        --sjdbGTFfile {{ constants.coyote.gtf }}
 
       STAR_INDEX=${CURRENT_DIR}/{{ temp_dir }}/star_index
 
@@ -306,42 +306,20 @@ which appears to be working now after some code changes, keeping this here in ca
       {% set directory %}{{ temp_dir }}{% endset %}
       {{- remove_files(directory,none,task) }}
     {% elif tasks.RNA_transcriptome_quantify_expression_HTseq and not tasks.RNA_transcriptome_quantify_expression_subread_featureCounts %}
-      {% set task_list = [] %}
       {% set task %}htseq_{{ sample.name }}{% endset %}
-      {% do task_list.append(task) %}
-      {% set task %}fixmate_sort_star_{{ sample.name }}{% endset %}
-      {% do task_list.append(task) %}
       {% set directory %}{{ temp_dir }}{% endset %}
-      {{- htseq(sample) }}
-      {{- remove_files(directory,none,task_list) }}
+      {{- remove_files(directory,none,task) }}
     {% elif tasks.RNA_transcriptome_quantify_expression_subread_featureCounts and not tasks.RNA_transcriptome_quantify_expression_HTseq %}
-      {% set task_list = [] %}
       {% set task %}featurecounts_{{ sample.name }}{% endset %}
-      {% do task_list.append(task) %}
-      {% set task %}fixmate_sort_star_{{ sample.name }}{% endset %}
-      {% do task_list.append(task) %}
       {% set directory %}{{ temp_dir }}{% endset %}
-      {{- featurecounts(sample) }}
-      {{- remove_files(directory,none,task_list) }}
+      {{- remove_files(directory,none,task) }}
     {% else %}
-      {% set task_list = [] %}
       {% set task %}htseq_{{ sample.name }}{% endset %}
-      {% do task_list.append(task) %}
-      {% set task %}featurecounts_{{ sample.name }}{% endset %}
-      {% do task_list.append(task) %}
-      {% set task %}fixmate_sort_star_{{ sample.name }}{% endset %}
-      {% do task_list.append(task) %}
       {% set directory %}{{ temp_dir }}{% endset %}
-      {{- htseq(sample) }}
-      {{- featurecounts(sample) }}
-      {{- remove_files(directory,none,task_list) }}
+      {{- remove_files(directory,none,task) }}
     {% endif %}
-{% endmacro %}
 
-{% macro htseq(sample) %}
-{% set temp_dir %}temp/{{ sample.gltype }}/quant/star/{{ sample.name }}{% endset %}
-{% set star_bam_unsort %}{{ temp_dir }}/{{ sample.name }}.Aligned.out.bam{% endset %}
-
+{% if tasks.RNA_transcriptome_quantify_expression_HTseq|default(true) %}
 - name: htseq_{{ sample.name }}
   tags: [{{ sample.gltype }}, transcriptome, quantify_expression, HTseq, {{ sample.name }}]
   reset: predecessors
@@ -382,16 +360,13 @@ which appears to be working now after some code changes, keeping this here in ca
       --additional-attr=gene_name \
       --mode=union \
       --nonunique=none \
-      --stranded={{ constants.phoenix.strandedness_options[sample.strandedness].htseq }} \
+      --stranded={{ constants.coyote.strandedness_options[sample.strandedness].htseq }} \
       "{{ star_bam_unsort }}" \
-      "{{ constants.phoenix.gtf }}" \
+      "{{ constants.coyote.gtf }}" \
       > "{{ sample.gltype }}/quant/htseq/{{ sample.name }}/{{ sample.name }}.htseq_counts.txt"
-{% endmacro %}
+{% endif %}
 
-{% macro featurecounts(sample) %}
-{% set temp_dir %}temp/{{ sample.gltype }}/quant/star/{{ sample.name }}{% endset %}
-{% set star_bam_unsort %}{{ temp_dir }}/{{ sample.name }}.Aligned.out.bam{% endset %}
-
+{% if tasks.RNA_transcriptome_quantify_expression_subread_featureCounts|default(true) %}
 - name: featurecounts_{{ sample.name }}
   tags: [{{ sample.gltype }}, transcriptome, quantify_expression, subread_featureCounts, {{ sample.name }}]
   reset: predecessors
@@ -414,8 +389,8 @@ which appears to be working now after some code changes, keeping this here in ca
       -T 7 \
       -p \
       -t "exon" \
-      -s "{{ constants.phoenix.strandedness_options[sample.strandedness].featurecounts }}" \
-      -a "{{ constants.phoenix.gtf }}" \
+      -s "{{ constants.coyote.strandedness_options[sample.strandedness].featurecounts }}" \
+      -a "{{ constants.coyote.gtf }}" \
       -o "{{ sample.gltype }}/quant/featurecounts/{{ sample.name }}/{{ sample.name }}.exon.counts.tsv" \
       "{{ star_bam_unsort }}"
 
@@ -427,8 +402,10 @@ which appears to be working now after some code changes, keeping this here in ca
       -T 7 \
       -p \
       -t "gene" \
-      -s "{{ constants.phoenix.strandedness_options[sample.strandedness].featurecounts }}" \
-      -a "{{ constants.phoenix.gtf }}" \
+      -s "{{ constants.coyote.strandedness_options[sample.strandedness].featurecounts }}" \
+      -a "{{ constants.coyote.gtf }}" \
       -o "{{ sample.gltype }}/quant/featurecounts/{{ sample.name }}/{{ sample.name }}.gene.counts.tsv" \
       "{{ star_bam_unsort }}"
+{% endif %}
+
 {% endmacro %}

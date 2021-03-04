@@ -74,7 +74,7 @@
     module load {{ constants.tools.bowtie2.module }}
     module load {{ constants.tools.samtools.module }}
 
-    export BOWTIE2_INDEXES={{ constants.phoenix.bowtie2_index_path }}
+    export BOWTIE2_INDEXES={{ constants.coyote.bowtie2_index_path }}
 
     {#
     # If this task was interrupted previously, temp files may exist
@@ -120,11 +120,7 @@
       --rg PM:{{ rg.rgpm }} \
       --rg BC:{{ rg.rgbc|default('unknown') }} \
       -q \
-      {% if sample.gltype == 'chip' %}
-      -x {{ constants.phoenix.bowtie2_chip_index }} \
-      {% else %}
-      -x {{ constants.phoenix.bowtie2_index }} \
-      {% endif %}
+      -x {{ constants.coyote.bowtie2_index }} \
       -1 "temp/{{ sample.gltype }}/alignment/bowtie2/{{ sample.name }}/{{ rgid }}/{{ r1fastq.basename }}/{{ chunk_suffix }}" \
       -2 "temp/{{ sample.gltype }}/alignment/bowtie2/{{ sample.name }}/{{ rgid }}/{{ r2fastq.basename }}/{{ chunk_suffix }}" |\
     samtools fixmate \
@@ -273,7 +269,7 @@
 
     TAB=$'\t'
     cat <<EOF > "temp/{{ sample.gltype }}/alignment/bowtie2/callRegions.bed"
-    {% for contig in constants.phoenix.calling_contigs %}
+    {% for contig in constants.coyote.calling_contigs %}
     {{ contig.contig }}${TAB}{{ contig.length }}
     {% endfor %}
     EOF
