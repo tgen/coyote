@@ -37,7 +37,7 @@
     PROJECT_ROOT=$PWD
 
     {% set ns_list = [] %}
-    {% for effect in constants.phoenix.ns_effects %}
+    {% for effect in constants.coyote.ns_effects %}
       {% if annotate_flag == 'snpeff' %}
         {% set ns_effect %}INFO/ANN ~ "{{ effect }}"{% endset %}
       {% else %}
@@ -54,7 +54,7 @@
 
     {% if pair.gltype == 'exome' %}
     bedtools intersect \
-      -a {{ constants.phoenix.cds_intervals }} \
+      -a {{ constants.coyote.cds_intervals }} \
       -b {{ pair.tumor.capture_kit.extended_bed }} \
       > {{ mutation_burden_temp }}/{{ pair.name }}_isec_cds_capture_kit.bed
     {% endif %}
@@ -65,7 +65,7 @@
       {% if pair.gltype == 'exome' %}
       --bed {{ pair.name }}_isec_cds_capture_kit.bed \
       {% else %}
-      --bed {{ constants.phoenix.cds_intervals }} \
+      --bed {{ constants.coyote.cds_intervals }} \
       {% endif %}
       --vcf {{ pair.name }}.{{ variant_caller }}.{{ annotate_flag }}.vcf.gz \
       --tbam ${PROJECT_ROOT}/{{ tumor_bam }} \

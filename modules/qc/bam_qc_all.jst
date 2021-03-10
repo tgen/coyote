@@ -235,7 +235,7 @@
 
     cd {{ results_dir }}
 
-    Rscript ${JS_PIPELINE_PATH}/required_scripts/{{ constants.phoenix.plotSamStats_Rscript }} \
+    Rscript ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.plotSamStats_Rscript }} \
         --samtoolsDuplicatesFile={{ sample.name }}.{{ aligner }}.bam.samtools.markdup.txt \
         --bam={{ bam|basename }} \
         --sample={{ sample.name }} \
@@ -552,11 +552,11 @@
     --INPUT {{ bam }} \
     --OUTPUT "{{ results_dir }}/{{ bam|basename }}" \
     {% if sample.gltype == 'rna' or sample.gltype == 'singlecellrna' %}
-    --REFERENCE_SEQUENCE "{{ constants.phoenix.star_fasta }}" \
+    --REFERENCE_SEQUENCE "{{ constants.coyote.star_fasta }}" \
     {% elif sample.gltype == 'chip' %}
-    --REFERENCE_SEQUENCE "{{ constants.phoenix.chip_fasta }}" \
+    --REFERENCE_SEQUENCE "{{ constants.coyote.chip_fasta }}" \
     {% else %}
-    --REFERENCE_SEQUENCE "{{ constants.phoenix.reference_fasta }}" \
+    --REFERENCE_SEQUENCE "{{ constants.coyote.reference_fasta }}" \
     {% endif %}
 
     gatk ConvertSequencingArtifactToOxoG \

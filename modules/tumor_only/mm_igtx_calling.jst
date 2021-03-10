@@ -64,9 +64,9 @@
     fi
 
     {% if controlDataFiles is defined and tumor.assayCode in toAssayCodes %}
-    python ${JS_PIPELINE_PATH}/required_scripts/{{ constants.phoenix.pairoscope_mm_igtx_calling_tumor_only_script }} \
+    python ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.pairoscope_mm_igtx_calling_tumor_only_script }} \
     {% else %}
-    python ${JS_PIPELINE_PATH}/required_scripts/{{ constants.phoenix.pairoscope_mm_igtx_calling_script }} \
+    python ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.pairoscope_mm_igtx_calling_script }} \
     {% endif %}
       --input_file {{ results_dir }}/{{ tumor.name }}.{{ aligner }}_pairoscope_igtx_discordantTable.txt \
       --specimen {{ tumor.rgsm }} \
@@ -109,9 +109,9 @@
 
     dle.py \
       --alignment-file {{ tumor_bam }} \
-      --reference-genome {{ constants.phoenix.reference_fasta }} \
-      --regions-bed-file {{ constants.phoenix.igtx_gene_regions }} \
-      --igs-regions-bed-file {{ constants.phoenix.igtx_regions }} \
+      --reference-genome {{ constants.coyote.reference_fasta }} \
+      --regions-bed-file {{ constants.coyote.igtx_gene_regions }} \
+      --igs-regions-bed-file {{ constants.coyote.igtx_regions }} \
       --dir-out-fq {{ results_dir }} \
       --prefix-fq {{ tumor.name }} \
       --min-mapq 0 \
@@ -189,7 +189,7 @@
         bwa mem \
           -t 4 \
           -o {{ temp_dir }}/{{ tumor.name }}_${chrRegion}_${cluster}/trinity/trinbwafile.sam \
-          {{ constants.phoenix.bwa_index }} \
+          {{ constants.coyote.bwa_index }} \
           {{ temp_dir }}/{{ tumor.name }}_${chrRegion}_${cluster}/trinity/Trinity.fasta
 
         samtools view \
@@ -231,13 +231,13 @@
 
       samtools index -@ 4 {{ results_dir }}/{{ tumor.name }}_Trinity_All_Clusters_sorted.bam
 
-      python3 ${JS_PIPELINE_PATH}/required_scripts/{{ constants.phoenix.process_assembled_bam }} \
+      python3 ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.process_assembled_bam }} \
         --input_bam {{ results_dir }}/{{ tumor.name }}_Trinity_All_Clusters_sorted.bam \
         --fastq_dir {{ results_dir }} \
         --contig 125 \
         --reads 3 \
         --window 25 \
-        --pairoscope_bed_file {{ constants.phoenix.igtx_pairoscope_regions }} \
+        --pairoscope_bed_file {{ constants.coyote.igtx_pairoscope_regions }} \
         --output_path {{ results_dir }} \
         --specimen {{ tumor.name }} \
         --bam_path {{ results_dir }}
@@ -317,7 +317,7 @@
     MANTA_BED="{{ temp_dir }}/callRegions.bed"
     TAB=$'\t'
     cat <<EOF > "${MANTA_BED}"
-    {% for contig in constants.phoenix.calling_contigs %}
+    {% for contig in constants.coyote.calling_contigs %}
     {{ contig.contig }}${TAB}0${TAB}{{ contig.length }}
     {% endfor %}
     EOF
@@ -348,7 +348,7 @@
       --callMemMb 50 \
       --normalBam "{{ normal_bam }}" \
       --tumorBam "{{ tumor_bam }}" \
-      --referenceFasta "{{ constants.phoenix.reference_fasta }}" \
+      --referenceFasta "{{ constants.coyote.reference_fasta }}" \
       --runDir "{{ temp_dir }}"
 
     {# Execute on the local machine with 19 parallel jobs #}
@@ -410,7 +410,7 @@
     echo -e "----------------"
 
     {# adding fields and flags to pass.vcf.gz file #}
-    python3 ${JS_PIPELINE_PATH}/required_scripts/{{ constants.phoenix.manta_prepare_sv_vcf }} \
+    python3 ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.manta_prepare_sv_vcf }} \
       -p 4 \
       -i {{ temp_dir }}/results/variants/somaticSV.pass.vcf.gz \
       -t {{ tumor_bam }} \
@@ -431,8 +431,8 @@
     bcftools index --threads 2 --tbi --force {{ temp_dir }}/results/variants/translocations.pass.flag.vcf.gz
 
     bash transParser.sh \
-      --bed-genes {{ constants.phoenix.igtx_gene_regions }} \
-      --bed-igs {{ constants.phoenix.igtx_regions }} \
+      --bed-genes {{ constants.coyote.igtx_gene_regions }} \
+      --bed-igs {{ constants.coyote.igtx_regions }} \
       --vcf {{ temp_dir }}/results/variants/translocations.pass.flag.vcf.gz \
       --samplename {{ pair.tumor.rgsm }} \
       --threads 2 \
@@ -468,8 +468,8 @@
 
     mkdir -p {{ temp_dir }}/pybedtools/ || true
 
-    python ${JS_PIPELINE_PATH}/required_scripts/{{ constants.phoenix.manta_gene_annotation_parallel }} \
-      -a {{ constants.phoenix.delly_annotation }} \
+    python ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.manta_gene_annotation_parallel }} \
+      -a {{ constants.coyote.delly_annotation }} \
       -i {{ temp_dir }}/results/variants/somaticSV.pass.flag.vcf.gz \
       -o {{ temp_dir }}/results/variants/somaticSV.pass.flag.anno.vcf \
       --threads 4 \
@@ -528,7 +528,7 @@
 
     mkdir -p {{ results_dir }}
 
-    Rscript ${JS_PIPELINE_PATH}/required_scripts/{{ constants.phoenix.summarize_mm_igtx_Rscript }} \
+    Rscript ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.summarize_mm_igtx_Rscript }} \
         -p {{ pairoscope_path }} \
         {% if control.pathToBam is defined %}
         -m {{ manta_path }} \
