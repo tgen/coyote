@@ -1,5 +1,6 @@
 {% from 'utilities/read_group_line.jst' import read_group_line %}
 {% from 'utilities/remove_files.jst' import remove_files with context %}
+{% from 'modules/qc/stats2json.jst' import stats2json with context %}
 
 # Run STAR RNA Alignment for quantification
 {% macro star_quant(sample, opt_dup_distance) %}
@@ -47,7 +48,11 @@
     {% for fq in r2fqlist %}
     - {{ fq.path }}
     {% endfor %}
-  output: {{ star_bam_unsort }}
+  output:
+    - {{ star_bam_unsort }}
+    - {{ star_finalcountsdir }}/{{ sample.name }}.ReadsPerGene.out.tab
+    - {{ star_finalcountsdir }}/{{ sample.name }}.star.junctions
+    - {{ star_finalcountsdir }}/{{ sample.name }}_star.Log.final.out
   cpus: 20
   mem: 80G
   walltime: "48:00:00"
@@ -173,6 +178,7 @@
 
     mv {{ temp_dir }}/{{ sample.name }}.ReadsPerGene.out.tab {{ star_finalcountsdir }}/
     mv {{ temp_dir }}/{{ sample.name }}.SJ.out.tab {{ star_finalcountsdir }}/{{ sample.name }}.star.junctions
+    mv {{ temp_dir }}/{{ sample.name }}.Log.final.out {{ star_finalcountsdir }}/{{ sample.name }}_star.Log.final.out
 
 
 - name: fixmate_sort_star_{{ sample.name }}
@@ -257,6 +263,9 @@
 This task works, and was tested with MMRF_1499, but it was made as a backup for samtools markdups
 which appears to be working now after some code changes, keeping this here in case we need a backup
 #}
+{% set task %}markduplicates_star_gatk_{{ sample.name }}{% endset %}
+{% set rna_md_metrics %}{{ results_dir }}/stats/{{ sample.name }}.star.bam.md_metrics{% endset %}
+{% set rna_md_metrics_json %}{{ rna_md_metrics }}.json{% endset %}
 - name: markduplicates_star_gatk_{{ sample.name }}
   tags: [{{ sample.gltype }}, alignment, rna_alignment, STAR, {{ sample.name }}]
   reset: predecessors
@@ -264,7 +273,7 @@ which appears to be working now after some code changes, keeping this here in ca
   output:
     - {{ star_bam_final }}
     - {{ star_bam_final }}.bai
-    - {{ results_dir }}/stats/{{ sample.name }}.star.bam.md_metrics
+    - {{ rna_md_metrics }}
   cpus: 10
   mem: 40G
   cmd: |
@@ -300,6 +309,7 @@ which appears to be working now after some code changes, keeping this here in ca
 
     samtools index -@ 10 "{{ star_bam_final }}"
 
+    {{- stats2json(sample.gltype, sample.name, task, rna_md_metrics, rna_md_metrics_json, "picard_mark_duplicates_metrics", sample_name=sample.name) }}
     {% if not tasks.RNA_transcriptome_quantify_expression_HTseq and not tasks.RNA_transcriptome_quantify_expression_subread_featureCounts %}
       {# Remove the remaining files #}
       {% set task %}markduplicates_star_gatk_{{ sample.name }}{% endset %}
@@ -307,14 +317,25 @@ which appears to be working now after some code changes, keeping this here in ca
       {{- remove_files(directory,none,task) }}
     {% elif tasks.RNA_transcriptome_quantify_expression_HTseq and not tasks.RNA_transcriptome_quantify_expression_subread_featureCounts %}
       {% set task %}htseq_{{ sample.name }}{% endset %}
+      {% do task_list.append(task) %}
+      {% set task %}markduplicates_star_gatk_{{ sample.name }}{% endset %}
+      {% do task_list.append(task) %}
       {% set directory %}{{ temp_dir }}{% endset %}
       {{- remove_files(directory,none,task) }}
     {% elif tasks.RNA_transcriptome_quantify_expression_subread_featureCounts and not tasks.RNA_transcriptome_quantify_expression_HTseq %}
       {% set task %}featurecounts_{{ sample.name }}{% endset %}
+      {% do task_list.append(task) %}
+      {% set task %}markduplicates_star_gatk_{{ sample.name }}{% endset %}
+      {% do task_list.append(task) %}
       {% set directory %}{{ temp_dir }}{% endset %}
       {{- remove_files(directory,none,task) }}
     {% else %}
       {% set task %}htseq_{{ sample.name }}{% endset %}
+      {% do task_list.append(task) %}
+      {% set task %}featurecounts_{{ sample.name }}{% endset %}
+      {% do task_list.append(task) %}
+      {% set task %}markduplicates_star_gatk_{{ sample.name }}{% endset %}
+      {% do task_list.append(task) %}
       {% set directory %}{{ temp_dir }}{% endset %}
       {{- remove_files(directory,none,task) }}
     {% endif %}
@@ -332,7 +353,7 @@ which appears to be working now after some code changes, keeping this here in ca
     set -eu
     set -o pipefail
     module load {{ constants.tools.htseq.module }}
-    
+
     mkdir -p "{{ sample.gltype }}/quant/htseq/{{ sample.name }}/"
 
     {#
@@ -341,10 +362,10 @@ which appears to be working now after some code changes, keeping this here in ca
     # -r --order=pos ; default=name ; GDC=name (bam unsorted)
     # -s --stranded=<yes/no/reverse> ; default=yes ; GDC=no (Dumb)
     # -a --a=<minaqual> ; default=10 ; skip all reads with alignment quality lower than the given minimum value
-    # --additional-attr=gene_name ; default=none ; will be printed as an additional column after the primary 
+    # --additional-attr=gene_name ; default=none ; will be printed as an additional column after the primary
     #   attribute column but before the counts column(s)
     # --mode=<union/intersection-strict/intersection-nonempty> ; default=union ; Pegasus=union, GDC=intersection-nonempty
-    # --nonunique=<none/all> ; default=none ; Mode to handle reads that align to or are assigned to more than 
+    # --nonunique=<none/all> ; default=none ; Mode to handle reads that align to or are assigned to more than
     #   one feature in the overlap
     # --secondary-alignments=<score/ignore> ; default=score
     # --supplementary-alignments=<score/ignore> ; default=score
@@ -371,7 +392,7 @@ which appears to be working now after some code changes, keeping this here in ca
   tags: [{{ sample.gltype }}, transcriptome, quantify_expression, subread_featureCounts, {{ sample.name }}]
   reset: predecessors
   input: {{ star_bam_unsort }}
-  output: 
+  output:
     - {{ sample.gltype }}/quant/featurecounts/{{ sample.name }}/{{ sample.name }}.exon.counts.tsv
     - {{ sample.gltype }}/quant/featurecounts/{{ sample.name }}/{{ sample.name }}.gene.counts.tsv
   cpus: 8
@@ -381,7 +402,7 @@ which appears to be working now after some code changes, keeping this here in ca
     set -eu
     set -o pipefail
     module load {{ constants.tools.subread.module }}
-    
+
     mkdir -p "{{ sample.gltype }}/quant/featurecounts/{{ sample.name }}/"
 
     {# TODO -p should only be set for paired-end #}

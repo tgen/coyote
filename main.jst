@@ -1,28 +1,28 @@
 # coyote Human GRCh37 pipeline
 #
 # The config variables includes an array of dataFiles. Here we
-# need to group the data files into read groups, and then group 
+# need to group the data files into read groups, and then group
 # read_groups into samples. This will make it easier to add tasks
 # later in the pipeline. The resulting samples dict will look
 # like this:
-# 
+#
 # sampleMergeKey/sampleName:
 #   glPrep: RNA
 #   glType: RNA
-#       ... 
-#   read_groups: 
+#       ...
+#   read_groups:
 #     C140KACXX_7_TAGCTT:
 #       glPrep: RNA
 #       glType: RNA
 #           ...
-#       data_files: 
-#         - 
+#       data_files:
+#         -
 #           fastqPath: .../MMRF_1157_1_BM_CD138pos_T2_TSMRU_K03096_C140KACXX_TAGCTT_L007_R1_001.fastq.gz
 #           fastqCode: R1
 #           glPrep: RNA
 #           glType: RNA
 #               ...
-#         - 
+#         -
 #           fastqPath: .../MMRF_1157_1_BM_CD138pos_T2_TSMRU_K03096_C140KACXX_TAGCTT_L007_R2_001.fastq.gz
 #           fastqCode: R2
 #           glPrep: RNA
@@ -53,6 +53,8 @@
 {% from 'modules/rna/main.jst' import rna_quant with context %}
 {% from 'modules/rna/main.jst' import rna_fusion_detection with context %}
 {% from 'modules/single_cell/main.jst' import single_cell_rna with context %}
+{% from 'modules/CHIP/main.jst' import chip_workflow with context %}
+{% from 'modules/tumor_only/main.jst' import tumor_only_variant_calling with context %}
 
 {% set samples = {} %}
 {% set fastq_validation = [] %}
@@ -148,27 +150,18 @@
 {{- finalize() }}
 
 {# Start of module calls #}
-{# These if statements are kind of dead right now because they aren't passed by LIMS, but everything runs because of default(true) #}
-{% if tasks.dna_alignment|default(true) %}
-    {{- dna_alignment(samples) }}
-{% endif %}
+{{- dna_alignment(samples) }}
 
-{% if tasks.constitutional_variant_calling|default(true) %}
-    {{- constitutional_variant_calling(samples) }}
-{% endif %}
+{{- constitutional_variant_calling(samples) }}
 
-{% if tasks.somatic_variant_calling|default(true) %}
-    {{- somatic_variant_calling(samples) }}
-{% endif %}
+{{- somatic_variant_calling(samples) }}
 
-{%- if tasks.rna_quant|default(true) %}
-    {{- rna_quant(samples) }}
-{% endif -%}
+{{- rna_quant(samples) }}
 
-{%- if tasks.rna_fusion_detection|default(true) %}
-    {{- rna_fusion_detection(samples) }}
-{% endif -%}
+{{- rna_fusion_detection(samples) }}
 
-{%- if tasks.single_cell_rna|default(true) %}
-    {{- single_cell_rna(dataFiles) }}
-{% endif -%}
+{{- single_cell_rna(dataFiles) }}
+
+{{- chip_workflow(samples) }}
+
+{{- tumor_only_variant_calling(samples) }}
