@@ -115,7 +115,7 @@
     {%- if tasks[taskPrefix+"_tumor_only_snp_indel_caller_deepvariant"]|default(true) %}
         {{- deepvariant_tumor_only(tumor, aligner='bwa', taskPrefix=taskPrefix) }}
     {% endif %}
-
+    {#
     {% if tasks[taskPrefix+"_disease_specific_multiple_myeloma"]|default(true) %}
         {{- mm_igtx_gammit(tumor, aligner='bwa') }}
     {% endif %}
@@ -127,6 +127,7 @@
     {% if tasks[taskPrefix+"_disease_specific_multiple_myeloma"]|default(true) %}
         {{- mm_igtx_summarize(tumor, aligner='bwa') }}
     {% endif %}
+    #}
 {% endfor %}
 
 {# lumosvar takes all tumor bams as input #}
