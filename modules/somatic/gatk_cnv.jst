@@ -166,22 +166,17 @@
       --targets ^X:340578-6642728 \
       --exclude "VAF<${MIN_VAF} | VAF>${MAX_VAF} | DP<${MIN_DP}" \
       --output-type v \
-      --output-file {{ temp_dir }}/{{ pair.normal.name }}.{{ aligner }}.snps.vcf \
+      --output-file {{ temp_dir }}/{{ pair.normal.name }}.{{ aligner }}.preFilt.snps.vcf \
       {{ deepvariant_vcf }}
 
-    {# Filter out Blacklist regions (https://doi.org/10.1038/s41598-019-45839-z) and centromeres #}
-    {# Not possible for coyote yet, leaving code here for later use #}
-    {#
+    {# Filter out centromeres, we also filter deny list regions in the human pipeline #}
     bcftools view \
-      --targets-file ^{{ constants.coyote.encode_denylist }} \
+      --targets-file ^{{ constants.coyote.centromere }} \
       --output-type v \
       --output-file {{ temp_dir }}/{{ pair.normal.name }}.{{ aligner }}.snps.vcf \
       {{ temp_dir }}/{{ pair.normal.name }}.{{ aligner }}.preFilt.snps.vcf
-    #}
-    {# Remove preFilt.snps.vcf #}
-    {#
+
     rm {{ temp_dir }}/{{ pair.normal.name }}.{{ aligner }}.preFilt.snps.vcf
-    #}
 
     {# Perform first round of CollectReadCounts on the normal for filtering intervals with little to no reads #}
     gatk --java-options "-Xmx12g" CollectReadCounts \
@@ -228,7 +223,7 @@
     gatk --java-options "-Xmx12g" FilterIntervals \
       --tmp-dir {{ temp_dir }}/temp/ \
       --intervals {{ temp_dir }}/preprocessed_filt_map.interval_list \
-      {# --exclude-intervals {{ constants.coyote.encode_denylist }} \ #}
+      --exclude-intervals {{ constants.coyote.centromere }} \
       --input {{ temp_dir }}/{{ pair.normal.name }}.{{ aligner }}.counts.hdf5 \
       --interval-merging-rule OVERLAPPING_ONLY \
       --low-count-filter-count-threshold ${EXP_1X_COUNTS} \
@@ -631,14 +626,8 @@
       eval "START=\${START_${CHR}}"
       eval "STOP=\${STOP_${CHR}}"
 
-      {# Centromeres are unknown in canine, setting start and stop to 0-1 #}
-      START_C=0
-      STOP_C=1
-      {# Here is the original code in case we define centromeres later #}
-      {#
       START_C=$(gawk -v CHR=$CHR '$1==CHR { print $2 }' {{ constants.coyote.centromere }})
       STOP_C=$(gawk -v CHR=$CHR '$1==CHR { print $3 }' {{ constants.coyote.centromere }})
-      #}
 
       if [[ ${START} -ge ${START_C} ]]
       then
@@ -695,9 +684,7 @@
       mv {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.modelFinal.genderCorrected.seg.temp {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.modelFinal.genderCorrected.seg
     done
 
-    {# Skipping seg extend for now, missing centromere file
     python ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.cna_seg_extend }} {{ constants.coyote.centromere }} {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.modelFinal.genderCorrected.seg
-    #}
 
     Rscript ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.plotCNVplus_Rscript }} \
       --hetDPfilter 1 \

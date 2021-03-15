@@ -435,8 +435,7 @@ constants:
     ribo_locations: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/gene_model/ensembl_v98/Canis_familiaris.CanFam3.1.98.ribo.interval_list
     gatk_cnv_primary_contigs_female: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/tool_resources/gatk_cnv/Canis_familiaris.CanFam3.1.primary.contigs.female.interval_list
     gatk_cnv_primary_contigs_male: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/tool_resources/gatk_cnv/Canis_familiaris.CanFam3.1.primary.contigs.male.interval_list
-    encode_denylist:
-    centromere:
+    centromere: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/public_databases/CanFam3.1.centromere.nochr.bed
     mappability_track:
     transcriptome_fasta: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/gene_model/ensembl_v98/Canis_familiaris.CanFam3.1.98.transcriptome.fasta
     salmon_index: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/gene_model/ensembl_v98/tool_resources/salmon_1.2.1-gompi-2019a/salmon_puff_75merPlus
@@ -471,6 +470,21 @@ constants:
     snpSniffer_sites: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/tool_resources/snpSniffer/positions_394_CanFam3_1_nochr.txt
     snpSniffer_database:
     vep_data: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/gene_model/ensembl_v98/tool_resources/vep/
+    ns_effects:
+      - 'splice_acceptor_variant'
+      - 'splice_donor_variant'
+      - 'start_lost'
+      - 'exon_loss_variant'
+      - 'frameshift_variant'
+      - 'stop_gained'
+      - 'stop_lost'
+      - 'start_lost'
+      - 'rare_amino_acid_variant'
+      - 'missense_variant'
+      - 'inframe_insertion'
+      - 'disruptive_inframe_insertion'
+      - 'inframe_deletion'
+      - 'disruptive_inframe_deletion'
     deepvariant_models:
       exome: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/tool_resources/deepvariant_v0.10.0/DeepVariant-inception_v3-0.10.0+data-wes_standard/model.ckpt
       genome: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/tool_resources/deepvariant_v0.10.0/DeepVariant-inception_v3-0.10.0+data-wgs_standard/model.ckpt

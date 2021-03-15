@@ -19,11 +19,9 @@
         {% set taskPrefix = 'Exome' %}
     {% elif sample.gltype in 'genome' %}
         {% set taskPrefix = 'Genome' %}
-        {#
         {% if tasks.Genome_constitutional_cna_caller_ichor|default(true) %}
            {{- ichorcna(sample, aligner='bwa', taskPrefix=taskPrefix) }}
         {% endif %}
-        #}
     {% endif %}
 
     {%- if sample.subGroup|lower != 'tumor' %}
