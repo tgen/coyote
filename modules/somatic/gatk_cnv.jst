@@ -684,9 +684,7 @@
       mv {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.modelFinal.genderCorrected.seg.temp {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.modelFinal.genderCorrected.seg
     done
 
-    {# No seg extend for now since it breaks
     python ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.cna_seg_extend }} {{ constants.coyote.centromere }} {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.modelFinal.genderCorrected.seg
-    #}
 
     Rscript ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.plotCNVplus_Rscript }} \
       --hetDPfilter 1 \
