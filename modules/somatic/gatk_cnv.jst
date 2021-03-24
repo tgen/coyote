@@ -189,7 +189,7 @@
 
     gatk --java-options "-Xmx12g" AnnotateIntervals \
       --tmp-dir {{ temp_dir }}/temp/ \
-      {# --mappability-track {{ constants.coyote.mappability_track }} \ #}
+      --mappability-track {{ constants.coyote.mappability_track }} \
       --intervals {{ temp_dir }}/preprocessed.interval_list \
       --output {{ temp_dir }}/PreFilter_anno_preprocessed.interval_list \
       --interval-merging-rule OVERLAPPING_ONLY \
@@ -684,7 +684,9 @@
       mv {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.modelFinal.genderCorrected.seg.temp {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.modelFinal.genderCorrected.seg
     done
 
+    {# No seg extend for now since it breaks
     python ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.cna_seg_extend }} {{ constants.coyote.centromere }} {{ temp_dir }}/results/{{ pair.name }}.{{ aligner }}.modelFinal.genderCorrected.seg
+    #}
 
     Rscript ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.plotCNVplus_Rscript }} \
       --hetDPfilter 1 \
