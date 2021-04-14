@@ -1,0 +1,91 @@
+{% from 'utilities/remove_files.jst' import remove_files with context %}
+
+{% macro sequenza(pair, aligner='bwa') %}
+{% set normal_bam %}{{ pair.normal.gltype }}/alignment/{{ aligner }}/{{ pair.normal.name }}/{{ pair.normal.name }}.{{ aligner }}.bam{% endset %}
+{% set tumor_bam %}{{ pair.tumor.gltype }}/alignment/{{ aligner }}/{{ pair.tumor.name }}/{{ pair.tumor.name }}.{{ aligner }}.bam{% endset %}
+{% set results_dir %}{{ pair.gltype }}/somatic_copy_number/sequenza/{{ pair.name }}{% endset %}
+{% set temp_dir %}temp/{{ pair.gltype }}/somatic_copy_number/sequenza/{{ pair.name }}{% endset %}
+
+{% for contig in primary_calling_contigs %}
+- name: sequenza_prep_{{ contig.contig }}_{{ pair.name }}_{{ aligner }}
+  tags: [{{ pair.gltype }}, somatic, structural_caller, manta, {{ pair.name }}]
+  methods: >
+    Somatic structural variants and indels for {{ pair.name }} ({{ aligner }})
+    were called with {{ constants.tools.manta.verbose }}.
+  input:
+    - {{ normal_bam }}
+    - {{ tumor_bam }}
+  output:
+    - {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz.gz
+  cpus: 4
+  mem: 8G
+  walltime: "24:00:00"
+  cmd: |
+    set -eu
+    set -o pipefail
+
+    module load {{ constants.tools.bcftools.module }}
+    module load {{ constants.tools.samtools.module }}
+
+    /home/bturner/packages/sequenza/bin/sequenza-utils bam2seqz \
+     --parallel 4 \
+     -n {{ normal_bam }} \
+     -t {{ tumor_bam }} \
+     --fasta {{ constants.coyote.reference_fasta }} \
+     -gc {{ constants.coyote.reference_gc }} \
+     --chromosome {{ contig.contig }} \
+     -o {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz.gz
+
+{% endfor %}
+
+- name: sequenza_prep_merge_{{ pair.name }}_{{ aligner }}
+  tags: [{{ pair.gltype }}, somatic, manta, flag, {{ pair.name }}]
+  input:
+    {% for contig in primary_calling_contigs %}
+    - {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz.gz
+    {% endfor %}
+  output:
+    - {{ results_dir }}/{ pair.name }}.sequenza.seqz.gz
+    - {{ results_dir }}/{ pair.name }}.sequenza.small.seqz.gz
+  cpus: 2
+  mem: 4G
+  walltime: "12:00:00"
+  cmd: |
+    set -eu
+    set -o pipefail
+
+    module load {{ constants.tools.htslib.module }}
+
+    {% for contig in primary_calling_contigs %}
+      zcat {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz.gz |\
+       bgzip >> {{ results_dir }}/{ pair.name }}.sequenza.seqz.gz
+    {% endfor %}
+
+     /home/bturner/packages/sequenza/bin/sequenza-utils seqz_binning \
+      --seqz {{ results_dir }}/{ pair.name }}.sequenza.seqz.gz \
+      -w 50 \
+      -o {{ results_dir }}/{ pair.name }}.sequenza.small.seqz.gz
+
+- name: sequenza_{{ pair.name }}_{{ aligner }}
+  tags: [{{ pair.gltype }}, somatic, manta, flag, gene, annotation, {{ pair.name }}]
+  reset: predecessors
+  input:
+    - {{ temp_dir }}/results/variants/somaticSV.pass.flag.vcf.gz
+    - {{ temp_dir }}/results/variants/somaticSV.pass.flag.vcf.gz.tbi
+  output:
+    - {{ results_dir }}/{{ pair.name }}.{{ aligner }}.manta.somaticSV.pass.vcf.gz
+    - {{ results_dir }}/{{ pair.name }}.{{ aligner }}.manta.somaticSV.pass.vcf.gz.tbi
+  cpus: 4
+  mem: 16G
+  walltime: "12:00:00"
+  cmd: |
+    set -eu
+    set -o pipefail
+
+    module load {{ constants.tools.R.module }}
+
+    Rscript ${JS_PIPELINE_PATH}/required_scripts/sequenza.R \
+      --sample_name {{ pair.name }} \
+      --sample_input {{ results_dir }}/{ pair.name }}.sequenza.small.seqz.gz
+
+{% endmacro %}
