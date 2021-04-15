@@ -27,7 +27,6 @@
     module load {{ constants.tools.bcftools.module }}
     module load {{ constants.tools.samtools.module }}
 
-    rm -r {{ temp_dir }} || true
     mkdir -p {{ temp_dir }}
 
     /home/bturner/packages/sequenza/bin/sequenza-utils bam2seqz \
