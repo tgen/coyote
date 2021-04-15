@@ -7,7 +7,6 @@
 {% set temp_dir %}temp/{{ pair.gltype }}/somatic_copy_number/sequenza/{{ pair.name }}{% endset %}
 
 {% for contig in constants.coyote.primary_calling_contigs %}
-{% if not loop.last %}
 - name: sequenza_prep_{{ contig.contig }}_{{ pair.name }}_{{ aligner }}
   tags: [{{ pair.gltype }}, somatic, structural_caller, manta, {{ pair.name }}]
   methods: >
@@ -17,7 +16,7 @@
     - {{ normal_bam }}
     - {{ tumor_bam }}
   output:
-    - {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz.gz
+    - {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz
   cpus: 1
   mem: 4G
   walltime: "24:00:00"
@@ -28,6 +27,7 @@
     module load {{ constants.tools.bcftools.module }}
     module load {{ constants.tools.samtools.module }}
 
+    rm -r {{ temp_dir }} || true
     mkdir -p {{ temp_dir }}
 
     /home/bturner/packages/sequenza/bin/sequenza-utils bam2seqz \
@@ -36,9 +36,8 @@
      --fasta {{ constants.coyote.reference_fasta }} \
      -gc {{ constants.coyote.reference_gc }} \
      --chromosome {{ contig.contig }} \
-     -o {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz.gz
+     -o {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz
 
-{% endif %}
 {% endfor %}
 
 - name: sequenza_prep_merge_{{ pair.name }}_{{ aligner }}
@@ -46,7 +45,7 @@
   reset: predecessors
   input:
     {% for contig in constants.coyote.primary_calling_contigs %}
-    - {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz.gz
+    - {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz
     {% endfor %}
   output:
     - {{ results_dir }}/{{ pair.name }}.sequenza.seqz.gz
@@ -63,12 +62,14 @@
     mkdir -p {{ results_dir }}
 
     {% for contig in constants.coyote.primary_calling_contigs %}
-      {% if not loop.last %}
-      cat {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz.gz >> {{ results_dir }}/{{ pair.name }}.sequenza.seqz.gz
+      {% if loop.index == 1 %}
+      cat {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz >> {{ results_dir }}/{{ pair.name }}.sequenza.seqz
+      {% else %}
+      tail -n +2 {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz >> {{ results_dir }}/{{ pair.name }}.sequenza.seqz
       {% endif %}
     {% endfor %}
 
-    tabix {{ results_dir }}/{{ pair.name }}.sequenza.seqz.gz
+    bgzip -@ 2 {{ results_dir }}/{{ pair.name }}.sequenza.seqz
 
     /home/bturner/packages/sequenza/bin/sequenza-utils seqz_binning \
       --seqz {{ results_dir }}/{{ pair.name }}.sequenza.seqz.gz \
