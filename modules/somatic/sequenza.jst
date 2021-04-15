@@ -6,7 +6,8 @@
 {% set results_dir %}{{ pair.gltype }}/somatic_copy_number/sequenza/{{ pair.name }}{% endset %}
 {% set temp_dir %}temp/{{ pair.gltype }}/somatic_copy_number/sequenza/{{ pair.name }}{% endset %}
 
-{% for contig in primary_calling_contigs %}
+{% for contig in constants.coyote.primary_calling_contigs %}
+{% if not loop.last %}
 - name: sequenza_prep_{{ contig.contig }}_{{ pair.name }}_{{ aligner }}
   tags: [{{ pair.gltype }}, somatic, structural_caller, manta, {{ pair.name }}]
   methods: >
@@ -17,8 +18,8 @@
     - {{ tumor_bam }}
   output:
     - {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz.gz
-  cpus: 4
-  mem: 8G
+  cpus: 1
+  mem: 4G
   walltime: "24:00:00"
   cmd: |
     set -eu
@@ -27,8 +28,9 @@
     module load {{ constants.tools.bcftools.module }}
     module load {{ constants.tools.samtools.module }}
 
+    mkdir -p {{ temp_dir }}
+
     /home/bturner/packages/sequenza/bin/sequenza-utils bam2seqz \
-     --parallel 4 \
      -n {{ normal_bam }} \
      -t {{ tumor_bam }} \
      --fasta {{ constants.coyote.reference_fasta }} \
@@ -36,12 +38,14 @@
      --chromosome {{ contig.contig }} \
      -o {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz.gz
 
+{% endif %}
 {% endfor %}
 
 - name: sequenza_prep_merge_{{ pair.name }}_{{ aligner }}
   tags: [{{ pair.gltype }}, somatic, manta, flag, {{ pair.name }}]
+  reset: predecessors
   input:
-    {% for contig in primary_calling_contigs %}
+    {% for contig in constants.coyote.primary_calling_contigs %}
     - {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz.gz
     {% endfor %}
   output:
@@ -56,25 +60,25 @@
 
     module load {{ constants.tools.htslib.module }}
 
-    {% for contig in primary_calling_contigs %}
-      zcat {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz.gz |\
-       bgzip >> {{ results_dir }}/{ pair.name }}.sequenza.seqz.gz
+    mkdir -p {{ results_dir }}
+
+    {% for contig in constants.coyote.primary_calling_contigs %}
+      {% if not loop.last %}
+      cat {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz.gz >> {{ results_dir }}/{{ pair.name }}.sequenza.seqz.gz
+      {% endif %}
     {% endfor %}
 
-     /home/bturner/packages/sequenza/bin/sequenza-utils seqz_binning \
-      --seqz {{ results_dir }}/{ pair.name }}.sequenza.seqz.gz \
+    tabix {{ results_dir }}/{{ pair.name }}.sequenza.seqz.gz
+
+    /home/bturner/packages/sequenza/bin/sequenza-utils seqz_binning \
+      --seqz {{ results_dir }}/{{ pair.name }}.sequenza.seqz.gz \
       -w 50 \
-      -o {{ results_dir }}/{ pair.name }}.sequenza.small.seqz.gz
+      -o {{ results_dir }}/{{ pair.name }}.sequenza.small.seqz.gz
 
 - name: sequenza_{{ pair.name }}_{{ aligner }}
   tags: [{{ pair.gltype }}, somatic, manta, flag, gene, annotation, {{ pair.name }}]
-  reset: predecessors
   input:
-    - {{ temp_dir }}/results/variants/somaticSV.pass.flag.vcf.gz
-    - {{ temp_dir }}/results/variants/somaticSV.pass.flag.vcf.gz.tbi
-  output:
-    - {{ results_dir }}/{{ pair.name }}.{{ aligner }}.manta.somaticSV.pass.vcf.gz
-    - {{ results_dir }}/{{ pair.name }}.{{ aligner }}.manta.somaticSV.pass.vcf.gz.tbi
+    - {{ results_dir }}/{{ pair.name }}.sequenza.small.seqz.gz
   cpus: 4
   mem: 16G
   walltime: "12:00:00"
@@ -86,6 +90,6 @@
 
     Rscript ${JS_PIPELINE_PATH}/required_scripts/sequenza.R \
       --sample_name {{ pair.name }} \
-      --sample_input {{ results_dir }}/{ pair.name }}.sequenza.small.seqz.gz
+      --sample_input {{ results_dir }}/{{ pair.name }}.sequenza.small.seqz.gz
 
 {% endmacro %}
