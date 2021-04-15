@@ -49,8 +49,8 @@
     - {{ temp_dir }}/{{ pair.name }}_{{ contig.contig }}.seqz.gz
     {% endfor %}
   output:
-    - {{ results_dir }}/{ pair.name }}.sequenza.seqz.gz
-    - {{ results_dir }}/{ pair.name }}.sequenza.small.seqz.gz
+    - {{ results_dir }}/{{ pair.name }}.sequenza.seqz.gz
+    - {{ results_dir }}/{{ pair.name }}.sequenza.small.seqz.gz
   cpus: 2
   mem: 4G
   walltime: "12:00:00"
