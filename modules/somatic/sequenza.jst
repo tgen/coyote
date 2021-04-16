@@ -90,6 +90,7 @@
 
     Rscript ${JS_PIPELINE_PATH}/required_scripts/sequenza.R \
       --sample_name {{ pair.name }} \
-      --sample_input {{ results_dir }}/{{ pair.name }}.sequenza.small.seqz.gz
+      --sample_input {{ results_dir }}/{{ pair.name }}.sequenza.small.seqz.gz \
+      --out_dir {{ results_dir }}
 
 {% endmacro %}

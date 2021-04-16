@@ -9,6 +9,8 @@ option_list <- list(
                 help = "[Required] The title used for each plot"),
     make_option(c("--sample_input", "-i"), dest="sample_input", action="store", default = NA, type = 'character',
                 help = "[Required] The title used for each plot")
+    make_option(c("--out_dir", "-o"), dest="out_dir", action="store", default = NA, type = 'character',
+                help = "[Required] The title used for each plot")
 )
 
 opt <- parse_args(OptionParser(option_list=option_list))
@@ -16,6 +18,7 @@ opt <- parse_args(OptionParser(option_list=option_list))
 #reading in data
 sample_name <- opt[["sample_name"]]
 sample_input <- opt[["sample_input"]]
+out_dir <- opt[["out_dir"]]
 
 #define a dataframe with centromere start and end
 chromosome <- c("chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10","chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19","chr20", "chr21", "chr22", "chr23", "chr24", "chr25", "chr26", "chr27", "chr28", "chr29", "chr30", "chr31", "chr32", "chr33", "chr34", "chr35", "chr36", "chr37", "chr38", "chrX")
@@ -29,7 +32,7 @@ centromeres<-data.frame(chromosome=chromosome,start.pos=start.pos,end.pos=end.po
 #function created using falcon to use the centromere position given
 falcon.seg.seqz <- function(data.file, chromosome, centromeres){
     require(sequenza)
-    seqz <- read.seqz(data.file, chr.name = chromosome)
+    seqz <- read.seqz(data.file, chr_name = chromosome)
     chrom <- gsub(chromosome, pattern = "chr", replacement = "")
     centromeres$chromosome <- gsub(centromeres$chromosome, pattern = "chr", replacement = "")
     seqz   <- seqz[seqz$zygosity.normal == "het", ]
@@ -76,20 +79,17 @@ falcon.seg.seqz <- function(data.file, chromosome, centromeres){
     }
 }
 
-
-
-data.file <- paste(input, "_small2.seqz.gz", sep="")
-seqz.data <- read.seqz(data.file)
+seqz.data <- read.seqz(sample_input)
 str(seqz.data, vec.len=2)
 
 brk<-list()
 chromosome.list <- c(1:38,"X")
 for (i in chromosome.list){
-    brk[[i]] <- falcon.seg.seqz(data.file, chromosome = i, centromeres = centromeres)
+    brk[[i]] <- falcon.seg.seqz(sample_input, chromosome = i, centromeres = centromeres)
 }
 breaks <- do.call(rbind, brk)
 
-gc.stats <- gc.sample.stats(data.file)
+gc.stats <- gc.sample.stats(sample_input)
 str(gc.stats)
 options("scipen"=100, "digits"=4)
 #this will force the program to read the regions as only straight values and not as exponential
@@ -97,10 +97,15 @@ options("scipen"=100, "digits"=4)
 gc.vect <- setNames(gc.stats$raw.mean, gc.stats$gc.values)
 seqz.data$adjusted.ratio <- seqz.data$depth.ratio / gc.vect[as.character(seqz.data$GC.percent)]
 
-chromosome.list <- c(1:38,"X")
-sample <- sequenza.extract(sample_input, verbose=T,breaks=breaks , chromosome.list=chromosome.list)
+sample <- sequenza.extract(sample_input, breaks=breaks, chromosome.list=chromosome.list)
 
 #estimates cellularity and ploidy
-CP<- sequenza.fit(sample, mc.core = 4, segment.filter= 5e6)
+CP <- sequenza.fit(sample, mc.core = 4, segment.filter= 5e6)
 
-sequenza.results(sample, CP, out.dir=paste(input,"_falcon_seqz_centromeres",sep=""), sample.id = sample_name)
+sequenza.results(sample, CP, out.dir=out_dir, sample.id = sample_name, chromosome.list = chromosome.list)
+
+png(file=paste(paste(out_dir,sample_name,sep=''),'Maximum_Likelihood_plot.png',sep=''),type='cairo')
+cp.plot(CP)
+cp.plot.contours(CP, add = TRUE,
+   likThresh = c(0.999, 0.95),
+   col = c("lightsalmon", "red"), pch = 20)
