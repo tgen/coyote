@@ -6,11 +6,11 @@ suppressPackageStartupMessages(library(falcon))
 option_list <- list(
     # Required
     make_option(c("--sample_name", "-s"), dest="sample_name", action="store", default = NA, type = 'character',
-                help = "[Required] The title used for each plot"),
+                help = "[Required] Name of the sample"),
     make_option(c("--sample_input", "-i"), dest="sample_input", action="store", default = NA, type = 'character',
-                help = "[Required] The title used for each plot")
+                help = "[Required] Path to the sample.seqz.gz file"),
     make_option(c("--out_dir", "-o"), dest="out_dir", action="store", default = NA, type = 'character',
-                help = "[Required] The title used for each plot")
+                help = "[Required] Output directory")
 )
 
 opt <- parse_args(OptionParser(option_list=option_list))
@@ -97,7 +97,7 @@ options("scipen"=100, "digits"=4)
 gc.vect <- setNames(gc.stats$raw.mean, gc.stats$gc.values)
 seqz.data$adjusted.ratio <- seqz.data$depth.ratio / gc.vect[as.character(seqz.data$GC.percent)]
 
-sample <- sequenza.extract(sample_input, breaks=breaks, chromosome.list=chromosome.list)
+sample <- sequenza.extract(sample_input, breaks=breaks, chromosome.list=chromosome.list, parallel = 4)
 
 #estimates cellularity and ploidy
 CP <- sequenza.fit(sample, mc.core = 4, segment.filter= 5e6)
