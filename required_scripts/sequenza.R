@@ -89,13 +89,8 @@ for (i in chromosome.list){
 }
 breaks <- do.call(rbind, brk)
 
-gc.stats <- gc.sample.stats(sample_input)
-str(gc.stats)
 options("scipen"=100, "digits"=4)
 #this will force the program to read the regions as only straight values and not as exponential
-
-gc.vect <- setNames(gc.stats$raw.mean, gc.stats$gc.values)
-seqz.data$adjusted.ratio <- seqz.data$depth.ratio / gc.vect[as.character(seqz.data$GC.percent)]
 
 sample <- sequenza.extract(sample_input, breaks=breaks, chromosome.list=chromosome.list, parallel = 4)
 
