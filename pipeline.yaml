@@ -380,8 +380,9 @@ constants:
     reference_fasta: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/genome_reference/Canis_familiaris.CanFam3.1.dna.toplevel.fa
     reference_fai: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/genome_reference/Canis_familiaris.CanFam3.1.dna.toplevel.fa.fai
     reference_dict: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/genome_reference/Canis_familiaris.CanFam3.1.dna.toplevel.dict
-    reference_gc: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/genome_reference/Canis_familiaris.CanFam3.1.dna.toplevel.gc50Base.wig.gz
     reference_non_N_bed: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/tool_resources/samtools_stats/canfam3.1_coyote_samstats_no_N_1based_primary_contigs_no_chrX.txt
+    reference_gc: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/genome_reference/Canis_familiaris.CanFam3.1.dna.toplevel.gc50Base.wig.gz
+    ichor_gc: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/tool_resources/ichorCNA/gc_canfam3.1_100kb.wig
     eva_gca: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/public_databases/eva/GCA_000002285.2_current_ids_renamed.vcf.gz
     dogsd_mutect_germlinereference: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/public_databases/dog_sd/Filtred_Published_ForMutect.vcf.gz
     dogsd_mutect_contamination: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/public_databases/dog_sd/Filtred_Published_ForMutectContamination.vcf.gz
