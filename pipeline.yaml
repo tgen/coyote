@@ -437,7 +437,7 @@ constants:
     ribo_locations: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/gene_model/ensembl_v98/Canis_familiaris.CanFam3.1.98.ribo.interval_list
     gatk_cnv_primary_contigs_female: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/tool_resources/gatk_cnv/Canis_familiaris.CanFam3.1.primary.contigs.female.interval_list
     gatk_cnv_primary_contigs_male: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/tool_resources/gatk_cnv/Canis_familiaris.CanFam3.1.primary.contigs.male.interval_list
-    centromere: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/public_databases/CanFam3.1.centromere.nochr.bed
+    centromere: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/public_databases/mischka_centromere/CanFam3.1.centromere.nochr.bed
     mappability_track: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/public_databases/k100.umap.no_header.bed
     transcriptome_fasta: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/gene_model/ensembl_v98/Canis_familiaris.CanFam3.1.98.transcriptome.fasta
     salmon_index: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/gene_model/ensembl_v98/tool_resources/salmon_1.2.1-gompi-2019a/salmon_puff_75merPlus
