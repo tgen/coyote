@@ -9,6 +9,8 @@ option_list <- list(
                 help = "[Required] Name of the sample"),
     make_option(c("--sample_input", "-i"), dest="sample_input", action="store", default = NA, type = 'character',
                 help = "[Required] Path to the sample.seqz.gz file"),
+    make_option(c("--centromeres", "-c"), dest="centromere", action="store", default = NA, type = 'character',
+                help = "[Required] Path to file defining centromere locations"),
     make_option(c("--out_dir", "-o"), dest="out_dir", action="store", default = NA, type = 'character',
                 help = "[Required] Output directory")
 )
@@ -18,16 +20,11 @@ opt <- parse_args(OptionParser(option_list=option_list))
 #reading in data
 sample_name <- opt[["sample_name"]]
 sample_input <- opt[["sample_input"]]
+centromere_input <- opt[["centromere"]]
 out_dir <- opt[["out_dir"]]
 
-#define a dataframe with centromere start and end
-chromosome <- c("chr1", "chr2", "chr3", "chr4", "chr5", "chr6", "chr7", "chr8", "chr9", "chr10","chr11", "chr12", "chr13", "chr14", "chr15", "chr16", "chr17", "chr18", "chr19","chr20", "chr21", "chr22", "chr23", "chr24", "chr25", "chr26", "chr27", "chr28", "chr29", "chr30", "chr31", "chr32", "chr33", "chr34", "chr35", "chr36", "chr37", "chr38", "chrX")
-
-start.pos <- c(122678785,85426708,91889043,88276631,88915250,77573801,80974532,74330416,61074082,69331447,74389097,72498081,63241923,60966679,64190966,59632846,64289059,55844845,53741614,58134056,50858623,61439934,52294480,47698779,51628933,38964690,45876710,41182112,41845238,40214260,39895921,38810281,31377067,42124431,26524999,30810995,30902991,23914537,123869142)
-
-end.pos <- c(122678785,85426708,91889043,88276631,88915250,77573801,80974532,74330416,61074082,69331447,74389097,72498081,63241923,60966679,64190966,59632846,64289059,55844845,53741614,58134056,50858623,61439934,52294480,47698779,51628933,38964690,45876710,41182112,41845238,40214260,39895921,38810281,31377067,42124431,26524999,30810995,30902991,23914537,123869142)
-
-centromeres<-data.frame(chromosome=chromosome,start.pos=start.pos,end.pos=end.pos)
+centromeres<-read.csv(centromere_input, sep = '\t', header = FALSE, col.names = c("chromosome","start","stop"))
+chromosome <- centromeres$chromosome
 
 #function created using falcon to use the centromere position given
 falcon.seg.seqz <- function(data.file, chromosome, centromeres){
@@ -83,8 +80,7 @@ seqz.data <- read.seqz(sample_input)
 str(seqz.data, vec.len=2)
 
 brk<-list()
-chromosome.list <- c(1:38,"X")
-for (i in chromosome.list){
+for (i in chromosome){
     brk[[i]] <- falcon.seg.seqz(sample_input, chromosome = i, centromeres = centromeres)
 }
 breaks <- do.call(rbind, brk)
@@ -92,12 +88,12 @@ breaks <- do.call(rbind, brk)
 options("scipen"=100, "digits"=4)
 #this will force the program to read the regions as only straight values and not as exponential
 
-sample <- sequenza.extract(sample_input, breaks=breaks, chromosome.list=chromosome.list, parallel = 4)
+sample <- sequenza.extract(sample_input, breaks=breaks, chromosome.list=chromosome, parallel = 4)
 
 #estimates cellularity and ploidy
 CP <- sequenza.fit(sample, mc.core = 4, segment.filter= 5e6)
 
-sequenza.results(sample, CP, out.dir=out_dir, sample.id = sample_name, chromosome.list = chromosome.list)
+sequenza.results(sample, CP, out.dir=out_dir, sample.id = sample_name, chromosome.list = chromosome)
 
 png(file=paste(paste(out_dir,sample_name,sep=''),'Maximum_Likelihood_plot.png',sep=''),type='cairo')
 cp.plot(CP)

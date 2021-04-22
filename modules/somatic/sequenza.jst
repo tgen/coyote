@@ -91,6 +91,7 @@
     Rscript ${JS_PIPELINE_PATH}/required_scripts/sequenza.R \
       --sample_name {{ pair.name }} \
       --sample_input {{ results_dir }}/{{ pair.name }}.sequenza.small.seqz.gz \
+      --centromeres {{ constants.coyote.centromere }} \
       --out_dir {{ results_dir }}
 
 {% endmacro %}
