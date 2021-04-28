@@ -157,9 +157,11 @@
         {{- manta_tumor_only(pair, aligner='bwa') }}
     {% endif %}
 
+    {#
     {% if tasks[taskPrefix+"_disease_specific_multiple_myeloma"]|default(true) %}
         {{- mm_igtx_manta(pair, aligner='bwa') }}
     {% endif %}
+    #}
 
     {% if tasks[taskPrefix+"_tumor_only_snp_indel_caller_strelka2"]|default(true) %}
         {{- strelka2_tumor_only(pair, aligner='bwa') }}
@@ -183,10 +185,6 @@
 
     {% if tasks[taskPrefix+"_tumor_only_structural_caller_delly"]|default(false) %}
         {{- delly_tumor_only(pair, aligner='bwa') }}
-    {% endif %}
-
-    {% if tasks[taskPrefix+"_tumor_only_structural_caller_gridss"]|default(false) %}
-        {{- gridss_tumor_only(pair, aligner='bwa') }}
     {% endif %}
     {% endif %}
 

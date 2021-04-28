@@ -125,18 +125,18 @@
     {% if tasks[taskPrefix+"_somatic_merge_vcfs_vcfMerger2"]|default(true) %}
         {{- vcfmerger2(pair, aligner='bwa', taskPrefix=taskPrefix) }}
     {% endif %}
+
     {% if tasks[taskPrefix+"_somatic_structural_caller_delly"]|default(false) %}
         {{- delly_somatic(pair, aligner='bwa') }}
-    {% endif %}
-    {% if tasks[taskPrefix+"_somatic_structural_caller_gridss"]|default(false) %}
-        {{- gridss_somatic(pair, aligner='bwa') }}
     {% endif %}
 
     {% if tasks[taskPrefix+"_somatic_cna_caller_gatk"]|default(true) %}
         {{- gatk_cnv(pair, aligner='bwa') }}
     {% endif %}
 
-    {{- sequenza(pair, aligner='bwa') }}
+    {% if tasks[taskPrefix+"_somatic_cna_caller_sequenza"]|default(true) %}
+        {{- sequenza(pair, aligner='bwa') }}
+    {% endif %}
 
 {% endfor %}
 
