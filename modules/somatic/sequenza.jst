@@ -24,12 +24,11 @@
     set -eu
     set -o pipefail
 
-    module load {{ constants.tools.bcftools.module }}
-    module load {{ constants.tools.samtools.module }}
+    module load {{ constants.tools.sequenza.module }}
 
     mkdir -p {{ temp_dir }}
 
-    /home/bturner/packages/sequenza/bin/sequenza-utils bam2seqz \
+    sequenza-utils bam2seqz \
      -n {{ normal_bam }} \
      -t {{ tumor_bam }} \
      --fasta {{ constants.coyote.reference_fasta }} \
@@ -56,7 +55,7 @@
     set -eu
     set -o pipefail
 
-    module load {{ constants.tools.htslib.module }}
+    module load {{ constants.tools.sequenza.module }}
 
     mkdir -p {{ results_dir }}
 
@@ -70,7 +69,7 @@
 
     bgzip -@ 2 {{ results_dir }}/{{ pair.name }}.sequenza.seqz
 
-    /home/bturner/packages/sequenza/bin/sequenza-utils seqz_binning \
+    sequenza-utils seqz_binning \
       --seqz {{ results_dir }}/{{ pair.name }}.sequenza.seqz.gz \
       -w 50 \
       -o {{ results_dir }}/{{ pair.name }}.sequenza.small.seqz.gz
@@ -86,7 +85,7 @@
     set -eu
     set -o pipefail
 
-    module load {{ constants.tools.R.module }}
+    module load {{ constants.tools.sequenza.module }}
 
     Rscript ${JS_PIPELINE_PATH}/required_scripts/sequenza.R \
       --sample_name {{ pair.name }} \

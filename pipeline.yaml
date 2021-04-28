@@ -264,6 +264,10 @@ constants:
         Li H, Handsaker B, Wysoker A, Fennell T, Ruan J, Homer N, Marth G, Abecasis G, Durbin R, and 1000
         Genome Project Data Processing Subgroup, The Sequence alignment/map (SAM) format and SAMtools,
         Bioinformatics (2009) 25(16) 2078-9 [19505943]
+    sequenza:
+      module: sequenza/3.0.0
+      version: "3.0.0"
+      verbose: Sequenza v3.0.0
     singularity:
       module: singularity/3.5.2-phoenix
       version: "3.5.2"
