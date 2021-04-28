@@ -60,9 +60,9 @@
     {{- mutation_burden(pair, normal_bam, tumor_bam, final_vcf, variant_caller, aligner, 'snpeff') }}
   {% endif %}
 {% endif %}
-
+{#
 {% if tasks[taskPrefix+"_somatic_sample_metric_msisensor_pro"]|default(true) %}
   {{- msisensor_pro(pair, normal_bam, tumor_bam, aligner) }}
 {% endif %}
-
+#}
 {% endmacro %}
