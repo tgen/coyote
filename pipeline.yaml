@@ -469,9 +469,11 @@ constants:
     snpeff_config: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/gene_model/ensembl_v98/tool_resources/snpEff_v4_3t/snpEff.config
     snpeff_data: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/gene_model/ensembl_v98/tool_resources/snpEff_v4_3t/data
     snpeff_db: canfam3.1.98
+    snpeff_canonical_cds_intervals: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/gene_model/ensembl_v98/Canis_familiaris.CanFam3.1.98.flt_canonical_snpeff.cds_padded.bed
     snpSniffer_sites: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/tool_resources/snpSniffer/positions_394_CanFam3_1_nochr.txt
     snpSniffer_database:
     vep_data: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/gene_model/ensembl_v98/tool_resources/vep/
+    vep_canonical_cds_intervals: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/gene_model/ensembl_v98/Canis_familiaris.CanFam3.1.98.flt_canonical_vep.cds_padded.bed
     ns_effects:
       - 'splice_acceptor_variant'
       - 'splice_donor_variant'
