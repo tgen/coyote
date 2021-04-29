@@ -67,7 +67,7 @@
       {% endif %}
     {% endfor %}
 
-    bgzip -@ 2 {{ results_dir }}/{{ pair.name }}.sequenza.seqz
+    bgzip -f -@ 2 {{ results_dir }}/{{ pair.name }}.sequenza.seqz
 
     sequenza-utils seqz_binning \
       --seqz {{ results_dir }}/{{ pair.name }}.sequenza.seqz.gz \
