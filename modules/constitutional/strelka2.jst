@@ -54,7 +54,7 @@
     STRELKA_BED="{{ temp_dir }}/callRegions.bed"
     TAB=$'\t'
     cat <<EOF > "${STRELKA_BED}"
-    {% for contig in constants.phoenix.calling_contigs %}
+    {% for contig in constants.coyote.primary_calling_contigs %}
     {{ contig.contig }}${TAB}0${TAB}{{ contig.length }}
     {% endfor %}
     EOF
@@ -80,7 +80,7 @@
       --callRegions "${STRELKA_BED}.gz" \
       --bam "{{ sample.gltype }}/alignment/{{ aligner }}/{{ sample.name }}/{{ sample.name }}.{{ aligner }}.bam" \
       --indelCandidates "{{ indel_candidates }}" \
-      --ref "{{ constants.phoenix.reference_fasta }}" \
+      --ref "{{ constants.coyote.reference_fasta }}" \
       --runDir "{{ temp_dir }}"
 
     {# Execute on the local machine with 19 parallel jobs #}
@@ -93,7 +93,7 @@
     samtools view \
       -C \
       -@ 16 \
-      --reference {{ constants.phoenix.reference_fasta }} \
+      --reference {{ constants.coyote.reference_fasta }} \
       -o {{ results_dir }}/evidence/{{ sample.name }}.{{ aligner }}.strelka2.realigned.cram \
       {{ temp_dir }}/results/realigned/realigned.S1.bam
 

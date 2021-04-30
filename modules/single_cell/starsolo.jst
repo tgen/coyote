@@ -70,7 +70,7 @@
       --runMode alignReads \
       --twopassMode Basic \
       --runThreadN 19 \
-      --genomeDir {{ constants.phoenix.star_indices_path }}/100bpReads \
+      --genomeDir {{ constants.coyote.star_indices_path }}/100bpReads \
       --genomeLoad NoSharedMemory \
       --sjdbOverhang 99 \
       --readFilesType Fastx \
@@ -84,11 +84,11 @@
       --outSAMattributes NH HI AS nM CR CY UR UY CB UB sM \
       --outSAMattrRGline {{ rglinelist|join(' , ') }} \
       --soloType CB_UMI_Simple \
-      --soloCBwhitelist "{{ constants.phoenix.scrna_chemistry_options[sample.assayCode].cell_barcode_whitelist_file }}" \
+      --soloCBwhitelist "{{ constants.coyote.scrna_chemistry_options[sample.assayCode].cell_barcode_whitelist_file }}" \
       --soloCBstart 1 \
       --soloCBlen 16 \
       --soloUMIstart 17 \
-      --soloUMIlen "{{ constants.phoenix.scrna_chemistry_options[sample.assayCode].umi_length }}" \
+      --soloUMIlen "{{ constants.coyote.scrna_chemistry_options[sample.assayCode].umi_length }}" \
       --soloBarcodeReadLength 0 \
       --soloCBmatchWLtype 1MM_multi_pseudocounts \
       --soloStrand {{ sample.rnaStrandDirection }} \

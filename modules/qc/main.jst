@@ -44,11 +44,11 @@
     {% if sample.gltype == 'rna' %}
       {% set taskPrefix = 'RNA' %}
       {{- bam_qc_gatk_collectrnaseqmetrics(sample, libraryCount, sample_lb, taskPrefix=taskPrefix, aligner=aligner) }}
-      {{- bam_qc_rna_BTcell_loci(sample, libraryCount, sample_lb, taskPrefix=taskPrefix, aligner=aligner) }}
+      {# bam_qc_rna_BTcell_loci(sample, libraryCount, sample_lb, taskPrefix=taskPrefix, aligner=aligner) }} #}
     {% elif sample.gltype == 'singlecellrna' %}
       {% set taskPrefix = 'SingleCellRNA' %}
       {{- bam_qc_gatk_collectrnaseqmetrics(sample, libraryCount, sample_lb, taskPrefix=taskPrefix, aligner=aligner) }}
-      {{- bam_qc_rna_BTcell_loci(sample, libraryCount, sample_lb,taskPrefix=taskPrefix, aligner=aligner) }}
+      {# bam_qc_rna_BTcell_loci(sample, libraryCount, sample_lb,taskPrefix=taskPrefix, aligner=aligner) }} #}
     {% elif sample.gltype == 'exome' %}
       {% set taskPrefix = 'Exome' %}
       {{- bam_qc_gatk_collecthsmetrics(sample, aligner=aligner) }}
@@ -57,14 +57,12 @@
       {{- bam_qc_gatk_collectwgsmetrics(sample, libraryCount, sample_lb, aligner=aligner) }}
       {{- bam_qc_gatk_collectwgsmetricswithnonzerocoverage(sample, libraryCount, sample_lb, aligner=aligner) }}
       {{- bam_qc_gatk_collectrawwgsmetrics(sample, libraryCount, sample_lb, aligner=aligner) }}
-    {% elif sample.gltype == 'chip' %}
-      {% set taskPrefix = 'CHIP' %}
     {% endif %}
 
     {# Constitutional dna specific tasks #}
     {% if sample.subGroup|lower == 'constitutional' and ( sample.gltype|lower == 'genome' or sample.gltype|lower == 'exome' )  %}
       {{- bam_qc_verifybamid2(sample, libraryCount, sample_lb, taskPrefix=taskPrefix, aligner=aligner) }}
-      {{- sex_check(sample, libraryCount, sample_lb, taskPrefix=taskPrefix, aligner=aligner) }}
+      {{- sex_check(sample, libraryCount, sample_lb, aligner=aligner) }}
     {% endif %}
 
     {# get oxo stats unless it is single cell rna #}
@@ -92,7 +90,7 @@
         {# General Library type specific tasks #}
         {% if sample.gltype == 'rna' %}
           {{- bam_qc_gatk_collectrnaseqmetrics(sample, libraryCount, sample_lb, taskPrefix=taskPrefix, aligner=aligner, bam_level=false) }}
-          {{- bam_qc_rna_BTcell_loci(sample, libraryCount, sample_lb, taskPrefix=taskPrefix, aligner=aligner, bam_level=false) }}
+          {# bam_qc_rna_BTcell_loci(sample, libraryCount, sample_lb, taskPrefix=taskPrefix, aligner=aligner, bam_level=false) }} #}
         {% elif sample.gltype == 'genome' %}
           {{- bam_qc_gatk_collectwgsmetrics(sample, libraryCount, sample_lb, aligner=aligner, bam_level=false) }}
           {{- bam_qc_gatk_collectwgsmetricswithnonzerocoverage(sample, libraryCount, sample_lb, aligner=aligner, bam_level=false) }}

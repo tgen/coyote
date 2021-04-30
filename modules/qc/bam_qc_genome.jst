@@ -45,7 +45,7 @@
       --USE_FAST_ALGORITHM false \
       --INPUT {{ bam }} \
       --OUTPUT {{ dna_metrics }} \
-      --REFERENCE_SEQUENCE {{ constants.phoenix.reference_fasta }}
+      --REFERENCE_SEQUENCE {{ constants.coyote.reference_fasta }}
 
     {% if libraryCount == 1 %}
       cp {{ dna_metrics }} {{ results_dir }}/{{ sample.name }}_{{ sample_lb }}.{{ aligner }}.bam.wgs_metrics
@@ -103,7 +103,7 @@
       --INPUT {{ bam }} \
       --OUTPUT {{ output }} \
       --CHART_OUTPUT {{ output }}.pdf \
-      --REFERENCE_SEQUENCE {{ constants.phoenix.reference_fasta }}
+      --REFERENCE_SEQUENCE {{ constants.coyote.reference_fasta }}
 
     {% if libraryCount == 1 %}
       cp {{ output }} {{ sample_lb_output }}
@@ -163,7 +163,7 @@
       --USE_FAST_ALGORITHM false \
       --INPUT "{{ bam }}" \
       --OUTPUT "{{ dna_metrics }}" \
-      --REFERENCE_SEQUENCE "{{ constants.phoenix.reference_fasta }}" \
+      --REFERENCE_SEQUENCE "{{ constants.coyote.reference_fasta }}" \
       --INCLUDE_BQ_HISTOGRAM true
 
     {% if libraryCount == 1 %}

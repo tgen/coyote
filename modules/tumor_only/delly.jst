@@ -43,8 +43,8 @@
 
     delly call \
       --type {{ svtype }} \
-      --genome {{ constants.phoenix.reference_fasta }} \
-      --exclude {{ constants.phoenix.delly_exclusions }} \
+      --genome {{ constants.coyote.reference_fasta }} \
+      --exclude {{ constants.coyote.delly_exclusions }} \
       --map-qual 1 \
       --mad-cutoff 9 \
       --outfile {{ temp_dir }}/{{ svtype }}/{{ sv_bcf }} \
@@ -136,7 +136,7 @@
     if [[ $(grep -m 1 -c "ENDPOSSV" {{ temp_dir }}/{{ pass_vcf }} ) -ne 1 ]]
     then
       sed 's/ID=END/ID=ENDPOSSV/ ; s/;END=/;ENDPOSSV=/' {{ temp_dir }}/{{ pass_vcf }} > {{ temp_dir }}/{{ pass_vcf }}.mod
-      python ${JS_PIPELINE_PATH}/required_scripts/{{ constants.phoenix.delly_addRC_to_Delly_VCF_script }} -i {{ temp_dir }}/{{ pass_vcf }}.mod -t {{ tumor_bam }} -n {{ normal_bam }} -s 1000
+      python ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.delly_addRC_to_Delly_VCF_script }} -i {{ temp_dir }}/{{ pass_vcf }}.mod -t {{ tumor_bam }} -n {{ normal_bam }} -s 1000
     elif [[ -e {{ temp_dir }}/{{ pass_vcf }} ]]
     then
       rsync {{ temp_dir }}/{{ pass_vcf }} {{ temp_dir }}/{{ pass_vcf }}.mod_addDist.vcf
@@ -144,7 +144,7 @@
     
     bcftools filter --exclude 'FMT/RCALT[0] < 5 | FMT/RCALT[1] > 1 | FMT/RDISTDISC1[0] < 100 | FMT/RDISTDISC2[0] < 100' {{ temp_dir }}/{{ pass_vcf }}.mod_addDist.vcf > {{ temp_dir }}/{{ pass_vcf }}.mod_addDist.vcf.flt.vcf
 
-    python ${JS_PIPELINE_PATH}/required_scripts/{{ constants.phoenix.delly_svtop_delly_sv_annotation_parellel_script }} -a {{ constants.phoenix.delly_annotation }} -i {{ temp_dir }}/{{ pass_vcf }}.mod_addDist.vcf.flt.vcf -o {{ temp_dir }}/{{ pair.name }}.{{ aligner }}.delly.pass.anno.vcf
+    python ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.delly_svtop_delly_sv_annotation_parellel_script }} -a {{ constants.coyote.delly_annotation }} -i {{ temp_dir }}/{{ pass_vcf }}.mod_addDist.vcf.flt.vcf -o {{ temp_dir }}/{{ pair.name }}.{{ aligner }}.delly.pass.anno.vcf
 
     {# Compressing all vcfs #}
     bcftools view \

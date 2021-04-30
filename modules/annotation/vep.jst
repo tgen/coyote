@@ -23,22 +23,19 @@
         --output_file "{{ final_vcf_prefix }}.vep.full.vcf" \
         --vcf \
         --vcf_info_field CSQ \
-        --species homo_sapiens \
+        --species canis_familiaris \
         --force_overwrite \
         --no_stats \
         --cache \
-        --dir_cache "{{ constants.phoenix.vep_data }}" \
+        --dir_cache "{{ constants.coyote.vep_data }}" \
         --cache_version 98 \
         --offline \
-        --fasta "{{ constants.phoenix.reference_fasta }}" \
+        --fasta "{{ constants.coyote.reference_fasta }}" \
         --buffer_size 10000 \
         --terms SO \
         --hgvs \
         --hgvsg \
         --symbol \
-        --sift b \
-        --polyphen b \
-        --humdiv \
         --uniprot \
         --domains \
         --canonical \
@@ -79,22 +76,19 @@
         --output_file "{{ final_vcf_prefix }}.vep.pick.vcf" \
         --vcf \
         --vcf_info_field CSQ \
-        --species homo_sapiens \
+        --species canis_familiaris \
         --force_overwrite \
         --no_stats \
         --cache \
-        --dir_cache "{{ constants.phoenix.vep_data }}" \
+        --dir_cache "{{ constants.coyote.vep_data }}" \
         --cache_version 98 \
         --offline \
-        --fasta "{{ constants.phoenix.reference_fasta }}" \
+        --fasta "{{ constants.coyote.reference_fasta }}" \
         --buffer_size 10000 \
         --terms SO \
         --hgvs \
         --hgvsg \
         --symbol \
-        --sift b \
-        --polyphen b \
-        --humdiv \
         --uniprot \
         --domains \
         --canonical \

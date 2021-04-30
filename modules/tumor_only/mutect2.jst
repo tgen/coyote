@@ -10,7 +10,7 @@
 {% set all_vcf %}{{ results_dir }}/{{ pair.name }}.{{ aligner }}.mutect2.all.vcf.gz{% endset %}
 {% set pass_vcf %}{{ results_dir }}/{{ pair.name }}.{{ aligner }}.mutect2.pass.vcf.gz{% endset %}
 
-{% for batch in constants.phoenix.calling_intervals %}
+{% for batch in constants.coyote.calling_intervals %}
 - name: tumor_only_mutect2_{{ pair.name }}_{{ aligner }}_{{ loop.index }}
   tags: [{{ pair.gltype }}, tumor_only, snp_indel_caller, gatk_mutect2, {{ pair.name }}]
   reset: prepare_tumor_only_{{ pair.normal.name }}
@@ -54,8 +54,8 @@
     gatk Mutect2 \
       --java-options "-Xmx14G" \
       --tmp-dir {{ temp_dir }}/temp_mutect2_{{ loop.index }}/ \
-      --reference {{ constants.phoenix.reference_fasta }} \
-      --germline-resource {{ constants.phoenix.gnomad_genome_mutect_germlinereference }} \
+      --reference {{ constants.coyote.reference_fasta }} \
+      --germline-resource {{ constants.coyote.gnomad_genome_mutect_germlinereference }} \
       --input "{{ normal_bam }}" \
       --normal-sample "${normal_rgsm}" \
       --input "{{ tumor_bam }}" \
@@ -69,7 +69,7 @@
 
 {% endfor %}
 
-{% for batch in constants.phoenix.calling_intervals %}
+{% for batch in constants.coyote.calling_intervals %}
 - name: tumor_only_mutect2_GetPileupSummaries_{{ pair.name }}_{{ aligner }}_{{ loop.index }}
   tags: [{{ pair.gltype }}, tumor_only, snp_indel_caller, gatk_mutect2, {{ pair.name }}]
   reset: prepare_tumor_only_{{ pair.normal.name }}
@@ -93,25 +93,25 @@
     {# Tumor pileups #}
     gatk --java-options "-Xmx7G" GetPileupSummaries \
       --tmp-dir {{ temp_dir }}/temp_GetPileupSummaries_tumor_{{ loop.index }}/ \
-      --reference {{ constants.phoenix.reference_fasta }} \
+      --reference {{ constants.coyote.reference_fasta }} \
       --input "{{ tumor_bam }}" \
       --interval-set-rule UNION \
       {% for interval in batch %}
       -L "{{ interval.contig }}:{{ interval.start }}-{{ interval.stop }}" \
       {% endfor %}
-      --variant {{ constants.phoenix.gnomad_genome_mutect_contamination }} \
+      --variant {{ constants.coyote.gnomad_genome_mutect_contamination }} \
       --output {{ temp_dir }}/{{ loop.index }}.tumor-pileups.table
 
     {# Normal pileups #}
     gatk --java-options "-Xmx7g" GetPileupSummaries \
       --tmp-dir {{ temp_dir }}/temp_GetPileupSummaries_normal_{{ loop.index }}/ \
-      -reference {{ constants.phoenix.reference_fasta }} \
+      -reference {{ constants.coyote.reference_fasta }} \
       --input "{{ normal_bam }}" \
       --interval-set-rule UNION \
       {% for interval in batch %}
       --intervals "{{ interval.contig }}:{{ interval.start }}-{{ interval.stop }}" \
       {% endfor %}
-      --variant {{ constants.phoenix.gnomad_genome_mutect_contamination }} \
+      --variant {{ constants.coyote.gnomad_genome_mutect_contamination }} \
       --output {{ temp_dir }}/{{ loop.index }}.normal-pileups.table
 
 {% endfor %}
@@ -120,7 +120,7 @@
   tags: [{{ pair.gltype }}, tumor_only, snp_indel_caller, gatk_mutect2, {{ pair.name }}]
   reset: predecessors
   input:
-    {% for b in constants.phoenix.calling_intervals %}
+    {% for b in constants.coyote.calling_intervals %}
     - {{ temp_dir }}/{{ loop.index }}.mutect2.vcf.gz
     {% endfor %}
   output:
@@ -141,7 +141,7 @@
     bcftools concat \
       --output-type z \
       --output "{{ temp_dir }}/{{ pair.name }}_{{ aligner }}.mutect2.raw.vcf.gz" \
-      {% for b in constants.phoenix.calling_intervals %}
+      {% for b in constants.coyote.calling_intervals %}
       {% if not loop.last %}
       "{{ temp_dir }}/{{ loop.index }}.mutect2.vcf.gz" \
       {% else %}
@@ -155,7 +155,7 @@
   tags: [{{ pair.gltype }},l tumor_only, snp_indel_caller, gatk_mutect2, {{ pair.name }}]
   reset: predecessors
   input:
-    {% for b in constants.phoenix.calling_intervals %}
+    {% for b in constants.coyote.calling_intervals %}
     - {{ temp_dir }}/{{ loop.index }}.mutect2.vcf.gz.stats
     {% endfor %}
   output: {{ temp_dir }}/merged.stats
@@ -175,7 +175,7 @@
 
     gatk --java-options "-Xmx7G" MergeMutectStats \
       --tmp-dir {{ temp_dir }}/temp_stats/ \
-      {% for b in constants.phoenix.calling_intervals %}
+      {% for b in constants.coyote.calling_intervals %}
       -stats "{{ temp_dir }}/{{ loop.index }}.mutect2.vcf.gz.stats" \
       {% endfor %}
       -O "{{ temp_dir }}/merged.stats"
@@ -184,7 +184,7 @@
   tags: [{{ pair.gltype }}, tumor_only, snp_indel_caller, gatk_mutect2, {{ pair.name }}]
   reset: predecessors
   input:
-    {% for b in constants.phoenix.calling_intervals %}
+    {% for b in constants.coyote.calling_intervals %}
     - {{ temp_dir }}/{{ loop.index }}.f1r2.tar.gz
     {% endfor %}
   output: {{ temp_dir }}/artifact-priors.tar.gz
@@ -204,7 +204,7 @@
 
     gatk --java-options "-Xmx7G" LearnReadOrientationModel \
       --tmp-dir {{ temp_dir }}/temp_readorientationmodel/ \
-      {% for b in constants.phoenix.calling_intervals %}
+      {% for b in constants.coyote.calling_intervals %}
       -I "{{ temp_dir }}/{{ loop.index }}.f1r2.tar.gz" \
       {% endfor %}
       -O {{ temp_dir }}/artifact-priors.tar.gz
@@ -213,7 +213,7 @@
   tags: [{{ pair.gltype }}, tumor_only, snp_indel_caller, gatk_mutect2, {{ pair.name }}]
   reset: predecessors
   input:
-    {% for b in constants.phoenix.calling_intervals %}
+    {% for b in constants.coyote.calling_intervals %}
     - {{ temp_dir }}/{{ loop.index }}.tumor-pileups.table
     - {{ temp_dir }}/{{ loop.index }}.normal-pileups.table
     {% endfor %}
@@ -238,8 +238,8 @@
     {# Merge tumor pileup #}
     gatk --java-options "-Xmx7G" GatherPileupSummaries \
       --tmp-dir {{ temp_dir }}/temp_merge_tumor/ \
-      --sequence-dictionary {{ constants.phoenix.reference_dict }} \
-      {% for b in constants.phoenix.calling_intervals %}
+      --sequence-dictionary {{ constants.coyote.reference_dict }} \
+      {% for b in constants.coyote.calling_intervals %}
       -I "{{ temp_dir }}/{{ loop.index }}.tumor-pileups.table" \
       {% endfor %}
       -O {{ temp_dir }}/merged.tumor-pileups.table.tsv
@@ -247,8 +247,8 @@
     {# Merge normal pileup #}
     gatk --java-options "-Xmx7G" GatherPileupSummaries \
       --tmp-dir {{ temp_dir }}/temp_merge_normal/ \
-      --sequence-dictionary {{ constants.phoenix.reference_dict }} \
-      {% for b in constants.phoenix.calling_intervals %}
+      --sequence-dictionary {{ constants.coyote.reference_dict }} \
+      {% for b in constants.coyote.calling_intervals %}
       -I "{{ temp_dir }}/{{ loop.index }}.normal-pileups.table" \
       {% endfor %}
       -O {{ temp_dir }}/merged.normal-pileups.table.tsv
@@ -311,7 +311,7 @@
     gatk FilterMutectCalls \
       --tmp-dir {{ temp_dir }}/temp_filter/ \
       --java-options "-Xmx7G" \
-      --reference {{ constants.phoenix.reference_fasta }} \
+      --reference {{ constants.coyote.reference_fasta }} \
       --max-alt-allele-count 2 \
       --variant "{{ temp_dir }}/{{ pair.name }}_{{ aligner }}.mutect2.raw.vcf.gz" \
       --stats "{{ temp_dir }}/merged.stats" \

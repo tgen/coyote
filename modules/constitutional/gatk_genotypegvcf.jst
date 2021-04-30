@@ -10,7 +10,7 @@
 {%- set pass_vcf %}{{ results_dir }}/{{ sample.name }}.{{ aligner }}.hc.pass.vcf.gz{% endset %}
 {%- set gvcf %}{{ results_dir }}/{{ sample.name }}.{{ aligner }}.hc.g.vcf.gz{% endset %}
 
-{% for batch in constants.phoenix.calling_intervals %}
+{% for batch in constants.coyote.calling_intervals %}
 
 - name: genotypegvcf_{{ sample.name }}_{{ aligner }}_{{ loop.index }}
   tags: [{{ sample.gltype}}, constitutional, genotype_hc_gvcf, gatk_GenotypeGVCFs, {{ sample.name }}]
@@ -32,7 +32,7 @@
     gatk GenotypeGVCFs \
       --tmp-dir "temp" \
       --java-options "-Xmx14G" \
-      --reference "{{ constants.phoenix.reference_fasta }}" \
+      --reference "{{ constants.coyote.reference_fasta }}" \
       {% for interval in batch %}
       --intervals "{{ interval.contig }}:{{ interval.start }}-{{ interval.stop }}" \
       {% endfor %}
@@ -65,7 +65,7 @@
       {% for interval in batch %}
       --intervals "{{ interval.contig }}:{{ interval.start }}-{{ interval.stop }}" \
       {% endfor %}
-      --reference "{{ constants.phoenix.reference_fasta }}" \
+      --reference "{{ constants.coyote.reference_fasta }}" \
       --input "{{ bam }}" \
       --variant "{{ temp_dir }}/{{ loop.index }}.vcf.gz" \
       --output "{{ temp_dir }}/{{ loop.index }}.scored.vcf.gz"
@@ -77,7 +77,7 @@
   tags: [{{ sample.gltype}}, constitutional, genotype_hc_gvcf, gatk_GenotypeGVCFs, {{ sample.name }}]
   reset: predecessors
   input:
-    {% for batch in constants.phoenix.calling_intervals %}
+    {% for batch in constants.coyote.calling_intervals %}
     - {{ temp_dir }}/{{ loop.index }}.scored.vcf.gz
     {% endfor %}
   output:
@@ -97,7 +97,7 @@
     bcftools concat \
       --output-type z \
       --output "{{ all_vcf }}" \
-      {% for batch in constants.phoenix.calling_intervals %}
+      {% for batch in constants.coyote.calling_intervals %}
       {% if not loop.last %}
       "{{ temp_dir }}/{{ loop.index }}.scored.vcf.gz" \
       {% else %}
@@ -132,7 +132,7 @@
       --info-key CNN_2D \
       --snp-tranche 99.9 \
       --indel-tranche 99.5 \
-      {% for resource in constants.phoenix.gatk_cnn_resources %}
+      {% for resource in constants.coyote.gatk_cnn_resources %}
       --resource "{{ resource }}" \
       {% endfor %}
       --variant "{{ all_vcf }}" \

@@ -1,17 +1,17 @@
 <img src="/images/TGen_Color_LOGO_medium.png" width="208.3" height="78" title="TGen Logo"> <br/>
-# Phoenix Workflow - A JetStream Workflow
+# Coyote Workflow - A JetStream Workflow
 
-This workflow supports the analysis of human sequencing samples against the GRCh38 reference genome 
-using ensembl version 98 gene models.  The workflow is designed to support project level analysis 
-that can include one or multiple types of data. Though not required the expectation is a project contains 
-data from a single individual thus centralizing all data types in a standardized output structure. The 
-workflow template supports a diverse array of analysis methods required to analyze DNA, RNA, and single cell 
-data.  Based on standardized variables it also supports integrated analysis between data types.  For some 
-processes multiple options are provided that can be individually enabled or disabled by configuration 
-parameters. Like all JetStream (https://github.com/tgen/jetstream) workflows developed at TGen this workflow is designed to facilitate our dynamic and 
-time sensitive analysis needs while ensuring compute and storage resources are used efficiently. The primary 
-input is a JSON record from the TGen LIMS but hand created inputs in the form of a JSON or EXCEL worksheet can 
-also be provided when run manually or by submission to the related JetStream Centro (https://github.com/tgen/jetstream_centro) 
+This workflow supports the analysis of canine sequencing samples against the CanFam3.1 reference genome
+using ensembl version 98 gene models.  The workflow is designed to support project level analysis
+that can include one or multiple types of data. Though not required the expectation is a project contains
+data from a single individual thus centralizing all data types in a standardized output structure. The
+workflow template supports a diverse array of analysis methods required to analyze DNA, RNA.
+Based on standardized variables it also supports integrated analysis between data types.  For some
+processes multiple options are provided that can be individually enabled or disabled by configuration
+parameters. Like all JetStream (https://github.com/tgen/jetstream) workflows developed at TGen this workflow is designed to facilitate our dynamic and
+time sensitive analysis needs while ensuring compute and storage resources are used efficiently. The primary
+input is a JSON record from the TGen LIMS but hand created inputs in the form of a JSON or EXCEL worksheet can
+also be provided when run manually or by submission to the related JetStream Centro (https://github.com/tgen/jetstream_centro)
 web portal. All required files defined the the `pipeline.yaml` can be created using code provided in the JetStream Resources
 repository (https://github.com/tgen/jetstream_resources).
 
@@ -22,24 +22,24 @@ _Click to show details_
 <details>
   <summary><b>DNA Alignment</b></summary>
 
-  The DNA Alignment module supports the generation of processed BAM or CRAM files from input fastqs files. 
-  The configuration files define one of three different alignment style variables (`dnaAlignmentStyle`) that 
-  all use BWA as the aligner but use different tools for alignment processing. Additionally, baserecalibration 
+  The DNA Alignment module supports the generation of processed BAM or CRAM files from input fastqs files.
+  The configuration files define one of three different alignment style variables (`dnaAlignmentStyle`) that
+  all use BWA as the aligner but use different tools for alignment processing. Additionally, baserecalibration
   and/or conversion to CRAM for archiving can be enabled for any project.
-  
+
   <img src="/images/DNA_Alignment_Options.png" width="768" height="512" title="DNA Alignment Options">
-  
+
   - TGen [`tgen`] (default)
     - Fastq files are chunked to 40M reads
     - Chunks are aligned with BWA, processed with samtools fixmate and samtools sort
     - Individual chunks are merged with samtools merge
     - PCR duplicates and platform (optical) duplicates are marked with samtools markdup
-  - GATK Best Paractices [`broad`]("Like" - does not support uBAM inputs)
+  - GATK Best Paractices [`broad`]("Like" - does not support uBAM inputs) **NOT TESTED FOR COYOTE**
     - Fastq files are chunked to 40M reads
     - Chunks are aligned with BWA, and converted to BAM files with samtools view
     - In one step individual chunks are merged and PCR or platform (optical) duplicates are marked with GATK/Picard markduplicates
     - Alignment records are sorted using GATK/Picard SortSAM
-  - Clinical [`ashion`]
+  - Clinical [`ashion`] **NOT TESTED FOR COYOTE**
     - Fastq files are concatenated
     - In one step reads are aligned with BWA, duplicates are marked with samblaster, converted to BAM and sorted using sambamba
   - Base Recalibration (optional, off by default)
@@ -51,21 +51,21 @@ _Click to show details_
 
 <details>
   <summary><b>Constitutional Analysis</b></summary>
-  
-  These modules support the discovery of small variants (SNV/INDELs), structural abnormalities (deletions, 
+
+  These modules support the discovery of small variants (SNV/INDELs), structural abnormalities (deletions,
   duplications, inversions, translocations), and copy number abnormalities on single constitutional samples
-  
+
   <img src="/images/Constitutional_Analysis_Options.png" width="768" height="512" title="Constitutional Analysis">
 
   - Variant Discovery (SNV/INDEL)
-    - Deepvariant (Only calls on primary contigs 1-22, X, Y)
+    - Deepvariant (Only calls on primary contigs 1-38, X)
       - requires a GPU compute resource
     - GATK HaplotypeCaller (gVCF mode)
       - gVCF generation
       - single sample calling using genotypeGVCFs and CNNscroreVariant
     - Freebayes
     - Strelka2 (Germline mode)
-    - Octopus (Individual) (Only calls on primary contigs 1-22, X, Y)
+    - Octopus (Individual) (Only calls on primary contigs 1-38, X)
   - Structural Variant Detection
     - Manta
   - Copy Number Analysis
@@ -75,19 +75,18 @@ _Click to show details_
 
 <details>
   <summary><b>Somatic Analysis</b></summary>
-  
-  This module will run several somatic variant callers on tumor/normal 
+
+  This module will run several somatic variant callers on tumor/normal
   data pairs:
-  
+
   <img src="/images/Somatic_Analysis_Options.png" width="768" height="512" title="Somatic Analysis">
 
   - Variant Discovery (SNV/INDEL)
-    - Strelka2 (Somatic mode)
     - Mutect2
     - Lancet
-      - Currently NOT enabled for genomes by default 
+      - Currently NOT enabled for genomes by default
     - VarDictJava
-    - Octopus (Only calls on primary contigs 1-22, X, Y)
+    - Octopus (Only calls on primary contigs 1-38, X)
   - Structural Variant Detection
     - Manta
     - Delly
@@ -99,17 +98,17 @@ _Click to show details_
 
 <details>
   <summary><b>Tumor Only Analysis</b></summary>
-  
-  This module will run several variant callers using a tumor sample and user defined normal 
+
+  This module will run several variant callers using a tumor sample and user defined normal
   data pairs:
-  
+
   <img src="/images/TumorOnly_Analysis_Options.png" width="768" height="512" title="TumorOnly Analysis">
 
   - Variant Discovery (SNV/INDEL)
     - Strelka2 (Somatic mode)
     - Mutect2
     - Lancet
-      - Currently NOT enabled for genomes by default 
+      - Currently NOT enabled for genomes by default
     - VarDictJava
     - Octopus (Only calls on primary contigs 1-22, X, Y)
   - Structural Variant Detection
@@ -123,9 +122,9 @@ _Click to show details_
 
 <details>
   <summary><b>RNA Analysis</b></summary>
-  
+
   <img src="/images/RNA_Alignment_Quantitation_Options.png" width="768" height="512" title="RNA Analysis">
- 
+
   - RNA Alignment
     - STAR
       - 2-pass mode
@@ -141,23 +140,24 @@ _Click to show details_
     - HtSeq
     - FeatureCounts
   - Fusion Transcript Detection
-    - Star-Fusion
+    - Star-Fusion (Currently non-functional)
 
 </details>
 
 <details>
   <summary><b>Single Cell RNA Sequencing</b></summary>
-  
+
+  <b>NOT TESTED FOR COYOTE</b>
   - 10x Genomics Cell Ranger
     - Supports 3' and 5' assays
     - Supports VDJ analysis
   - starSOLO
     - Supports 3' and 5' assays
-    
+
 </details>
 
 ## Output Folder Structure
-All final output files are placed in a standardized folder structure that generally reflects the relationship of files or 
+All final output files are placed in a standardized folder structure that generally reflects the relationship of files or
 the processing order.
 ```
 Project
@@ -173,8 +173,8 @@ Project
 
 <details>
   <summary><b>Project Folder Example</b></summary>
-  
-``` 
+
+```
 # Only Directories are Shown
 MMRF_1499
 ├── exome
@@ -496,7 +496,7 @@ All tools build with public easybuild configuration files, available [here](http
 </details>
 
 ## Install Guide
-Please see the [wiki](https://github.com/tgen/phoenix/wiki) for a detailed install guide
+Please see the [wiki](https://github.com/tgen/coyote/wiki) for a detailed install guide
 
 ## Running from command line
 In order to run from the command line, we need to create a config file for our project. The general format is as follows:
@@ -507,22 +507,22 @@ In order to run from the command line, we need to create a config file for our p
     "email": "",
     "hpcAccount": "",
     "isilonPath": "",
-    "pipeline": "phoenix",
+    "pipeline": "coyote",
     "dataFiles": [],
     "dnaAlignmentStyle": "tgen",
     "email": "somebody@tgen.org",
     "isilonPath": "",
-    "pipeline": "phoenix@version",
+    "pipeline": "coyote@version",
     "project": "Project_Name",
     "submitter": "somebody",
     "tasks": {},
 }
 ```
 
-Here is a larger example with actual data for running the phoenix pipeline on a NA12878 project:
+Here is a larger example with actual data for running the coyote pipeline on a NA12878 project:
 <details><summary>NA12878 Example</summary>
   <p>
-    
+
   ##### Some of this data has been modified to hide the identity of the original submitter(s)
   ```json
   {
@@ -795,8 +795,6 @@ Here is a larger example with actual data for running the phoenix pipeline on a 
     ],
     "dnaAlignmentStyle": "tgen",
     "email": "example@tgen.org",
-    "ethnicity": "Caucasian",
-    "familyCode": "",
     "holdConfig": false,
     "hpcAccount": "tgen-#####",
     "isilonPath": "/example/giab/",
@@ -805,41 +803,27 @@ Here is a larger example with actual data for running the phoenix pipeline on a 
     "maternalID": "",
     "patCode": "NA12878",
     "paternalID": "",
-    "pipeline": "phoenix",
+    "pipeline": "coyote",
     "project": "GIAB_NA12878",
     "sex": "Female",
     "study": "GIAB",
     "submitter": "user",
     "submitterEmail": "examplet@tgen.org",
     "tasks": {
-        "CHIP_quality_control_stats_bam_coverage" : true,
-        "CHIP_quality_control_stats_compute_GCBias" : true,
-        "CHIP_quality_control_stats_macs2_callpeak" : true,
-        "CHIP_quality_control_stats_multi_big_wig_summary" : true,
-        "CHIP_quality_control_stats_plot_coverage" : true,
-        "CHIP_quality_control_stats_plot_fingerprint" : true,
         "Exome_alignment_base_recalibration_gatk" : false,
         "Exome_alignment_mark_duplicates_gatk" : false,
         "Exome_alignment_mark_duplicates_samblaster" : false,
         "Exome_alignment_mark_duplicates_samtools" : true,
-        "Exome_constitutional_annotate_vcfs_bcftools_clinvar" : true,
-        "Exome_constitutional_annotate_vcfs_bcftools_cosmic_coding" : true,
-        "Exome_constitutional_annotate_vcfs_bcftools_cosmic_noncoding" : true,
-        "Exome_constitutional_annotate_vcfs_bcftools_dbsnp" : true,
-        "Exome_constitutional_annotate_vcfs_bcftools_gnomad_exome" : true,
-        "Exome_constitutional_annotate_vcfs_bcftools_gnomad_genome" : true,
-        "Exome_constitutional_annotate_vcfs_bcftools_topmed" : true,
+        "Exome_constitutional_annotate_vcfs_bcftools_eva_gca" : true,
         "Exome_constitutional_annotate_vcfs_snpEff_ann" : true,
         "Exome_constitutional_annotate_vcfs_vep" : true,
-        "Exome_constitutional_genotype_hc_gvcf_gatk_GenotypeGVCFs" : false,
+        "Exome_constitutional_genotype_hc_gvcf_gatk_GenotypeGVCFs" : true,
         "Exome_constitutional_snp_indel_caller_deepvariant" : true,
-        "Exome_constitutional_snp_indel_caller_freebayes" : false,
+        "Exome_constitutional_snp_indel_caller_freebayes" : true,
         "Exome_constitutional_snp_indel_caller_gatk_HaplotypeCaller" : true,
-        "Exome_constitutional_snp_indel_caller_octopus" : false,
-        "Exome_constitutional_snp_indel_caller_strelka2" : false,
-        "Exome_constitutional_structural_caller_gridss" : false,
+        "Exome_constitutional_snp_indel_caller_octopus" : true,
+        "Exome_constitutional_snp_indel_caller_strelka2" : true,
         "Exome_constitutional_structural_caller_manta" : true,
-        "Exome_disease_specific_multiple_myeloma" : true,
         "Exome_quality_control_constitutional_contamination_check_VerifyBamID" : true,
         "Exome_quality_control_constitutional_sex_check_freebayes" : true,
         "Exome_quality_control_genotype_concordance_snpSniffer" : true,
@@ -896,25 +880,17 @@ Here is a larger example with actual data for running the phoenix pipeline on a 
         "Genome_alignment_mark_duplicates_gatk" : false,
         "Genome_alignment_mark_duplicates_samblaster" : false,
         "Genome_alignment_mark_duplicates_samtools" : true,
-        "Genome_constitutional_annotate_vcfs_bcftools_clinvar" : true,
-        "Genome_constitutional_annotate_vcfs_bcftools_cosmic_coding" : true,
-        "Genome_constitutional_annotate_vcfs_bcftools_cosmic_noncoding" : true,
-        "Genome_constitutional_annotate_vcfs_bcftools_dbsnp" : true,
-        "Genome_constitutional_annotate_vcfs_bcftools_gnomad_exome" : true,
-        "Genome_constitutional_annotate_vcfs_bcftools_gnomad_genome" : true,
-        "Genome_constitutional_annotate_vcfs_bcftools_topmed" : true,
+        "Genome_constitutional_annotate_vcfs_bcftools_eva_gca" : true,
         "Genome_constitutional_annotate_vcfs_snpEff_ann" : true,
         "Genome_constitutional_annotate_vcfs_vep" : true,
         "Genome_constitutional_cna_caller_ichor" : true,
-        "Genome_constitutional_genotype_hc_gvcf_gatk_GenotypeGVCFs" : false,
+        "Genome_constitutional_genotype_hc_gvcf_gatk_GenotypeGVCFs" : true,
         "Genome_constitutional_snp_indel_caller_deepvariant" : true,
-        "Genome_constitutional_snp_indel_caller_freebayes" : false,
+        "Genome_constitutional_snp_indel_caller_freebayes" : true,
         "Genome_constitutional_snp_indel_caller_gatk_HaplotypeCaller" : true,
-        "Genome_constitutional_snp_indel_caller_octopus" : false,
-        "Genome_constitutional_snp_indel_caller_strelka2" : false,
-        "Genome_constitutional_structural_caller_gridss" : false,
+        "Genome_constitutional_snp_indel_caller_octopus" : true,
+        "Genome_constitutional_snp_indel_caller_strelka2" : true,
         "Genome_constitutional_structural_caller_manta" : true,
-        "Genome_disease_specific_multiple_myeloma" : true,
         "Genome_quality_control_constitutional_contamination_check_VerifyBamID" : true,
         "Genome_quality_control_constitutional_sex_check_freebayes" : true,
         "Genome_quality_control_genotype_concordance_snpSniffer" : true,
@@ -923,17 +899,10 @@ Here is a larger example with actual data for running the phoenix pipeline on a 
         "Genome_quality_control_stats_gatk_CollectWgsMetrics" : true,
         "Genome_quality_control_stats_gatk_CollectWgsMetricsWithNonZeroCoverage" : true,
         "Genome_quality_control_stats_gatk_ConvertSequencingArtifactToOxoG" : true,
-        "Genome_quality_control_stats_samtools_flagstat" : false,
+        "Genome_quality_control_stats_samtools_flagstat" : true,
         "Genome_quality_control_stats_samtools_idxstats" : true,
-        "Genome_quality_control_stats_samtools_markdup_stats" : true,
         "Genome_quality_control_stats_samtools_stats" : true,
-        "Genome_somatic_annotate_vcfs_bcftools_clinvar" : true,
-        "Genome_somatic_annotate_vcfs_bcftools_cosmic_coding" : true,
-        "Genome_somatic_annotate_vcfs_bcftools_cosmic_noncoding" : true,
-        "Genome_somatic_annotate_vcfs_bcftools_dbsnp" : true,
-        "Genome_somatic_annotate_vcfs_bcftools_gnomad_exome" : true,
-        "Genome_somatic_annotate_vcfs_bcftools_gnomad_genome" : true,
-        "Genome_somatic_annotate_vcfs_bcftools_topmed" : true,
+        "Genome_somatic_annotate_vcfs_bcftools_eva_gca" : true,
         "Genome_somatic_annotate_vcfs_snpEff_ann" : true,
         "Genome_somatic_annotate_vcfs_vep" : true,
         "Genome_somatic_cna_caller_gatk" : true,
@@ -1059,11 +1028,11 @@ template variables:
                         add a single template variable
   -C PATH, --config-file PATH
                         load template variables from a file
-                        
+
 $ jetstream init GIAB -C GIAB_NA12878_24582bb3f7.json
 ```
 
-This creates a jetstream project with the title of GIAB. Now in order to run the Phoenix pipeline on this project, we need to use:
+This creates a jetstream project with the title of GIAB. Now in order to run the coyote pipeline on this project, we need to use:
 ```
 $ jetstream pipelines -h
 usage: jetstream pipelines [-h] [-l] [-p PROJECT] [-o OUT] [-b] [-r]
@@ -1126,7 +1095,7 @@ pipeline options:
                         override path to the pipelines home
   -L, --list            show a list of all the pipelines installed
 
-$ jetstream pipelines phoenix -p GIAB
+$ jetstream pipelines coyote -p GIAB
 ```  
 Now we wait for the pipeline to finish!
 
@@ -1178,36 +1147,36 @@ but we will explain the more unique variables. Here is an example:
 
 ## Data file attributes
 
-There are restrictions on what some of these variables can be assigned to, these will be denoted in the [ ]'s. 
+There are restrictions on what some of these variables can be assigned to, these will be denoted in the [ ]'s.
 If the attribute isn't strictly required then it is not included in this list.
 
   - *assayCode*  
     Genome: [*] We are not concerned about the assayCode for genomes.  
     *Note: We have a number of bed files supporting our exome captures, these are the shortened capture codes*  
-    Exome: [ *AG2 | *E61 | *S5U | *S5X | *S6U | *S6X | *S7X | *ST2 | *STL | *STX | *TS1 | *V6C ]   
+    Exome: [ *SC2 | *XT2 ]   
     Used for determining if the sample is DNA/RNA/etc. and adding the corresponding
     tasks to the final workflow. Each sample discovered will take this attribute from
     the first file encountered for that sample in the config file.
 
   - *dnaRnaMergeKey*  
-    Used during DNA/RNA integrations steps. It defines the pairing of DNA and RNA samples as a project might have 
+    Used during DNA/RNA integrations steps. It defines the pairing of DNA and RNA samples as a project might have
     multiple DNA and RNA pairs, for instance it can be used to ensure the diagnosis exome and RNA are paired together
     and the relapse exome is not paired with the diagnosis RNA.
-    
+
   - *fastqCode* [R1|R2]  
     Assigns the read number of the fastq following standard Illumina paired-end nomenclature.
-    
+
   - *fastqPath*   
     Assigns the path to the fastq.
 
   - *fileType*  
     Assigns the file type.
 
-  - *glPrep* [genome|capture|rna|singlecellrna|singlecellenrichment|singlecellcdna|singlecelltargetamp|matepair|chip]  
+  - *glPrep* [genome|capture|rna]  
     Used for determining the prep used to create the sample and then modifying how the
     pipeline runs depending on the prep. This is used to configure single cell as well as CHIP preps.
 
-  - *glType* [genome|genomephased|exome|rna|singlecellrna|singlecelldna|matepair|chip]  
+  - *glType* [genome|genomephased|exome|rna]  
     Used for determining if the sample is DNA/RNA/etc. and adding the corresponding
     tasks to the final workflow. Each sample discovered will take this attribute from
     the first file encountered for that sample in the config file.
@@ -1217,10 +1186,10 @@ If the attribute isn't strictly required then it is not included in this list.
 
   - *numberOfReads*  
     Used for validating the number of chunks created during alignment.
-    
+
   - *read1Length / read2Length*   
     Used to select the correct STAR indexes.
-    
+
   - *readOrientation* [inward|outward]  
     Used to set the strand orientation of RNA assays. Used in conjunction with rnaStrandDirection and rnaStrandType.
 
@@ -1234,18 +1203,18 @@ If the attribute isn't strictly required then it is not included in this list.
     rgpm - Platform model. Used to configure platform duplicate marking thresholds. Free-form text providing further details of the platform/technology used.  
     rgpu - Platform unit (e.g., flowcell-barcode.lane for Illumina or slide for SOLiD). Unique identifier.  
     rgsm - Sample. Use pool name where a pool is being sequenced.  
-    
+
   - *fraction*  
     Relevant to the TGen naming scheme. See TGen Naming Convention.
 
   - *rnaStrandDirection* [notapplicable|forward|reverse]  
     Used during STAR alignment of RNA.
-    
+
   - *rnaStrandType* [unstranded|stranded]  
     Assigns the strand orientation of an RNA library
-    
+
   - *sampleMergeKey*   
-    This is the expected BAM filename and is used to merge data from multiple sequencing 
+    This is the expected BAM filename and is used to merge data from multiple sequencing
     lanes or flowcells for data from the same specimen (rgsm) tested with the same assay
 
   - *sampleName*  
@@ -1256,8 +1225,8 @@ If the attribute isn't strictly required then it is not included in this list.
     the distinction of files during somatic analysis.
 
 ## TGen Naming Convention
-Many of the naming structures used are defined by the standardize naming structure used at TGen that ensures all files 
-have a unique but descriptive name. It is designed to support serial collection and multiple collections from 
+Many of the naming structures used are defined by the standardize naming structure used at TGen that ensures all files
+have a unique but descriptive name. It is designed to support serial collection and multiple collections from
 difference sources on a single day.  Furthermore, sample processing methods can be encoded.
 
 STUDY_PATIENT_VISIT_SOURCE_FRACTION_SubgroupIncrement_ASSAY_LIBRARY

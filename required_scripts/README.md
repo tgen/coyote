@@ -1,6 +1,6 @@
 # Required Scripts
 This directory contains scripts for at least one of the following reasons
- - From a private source with no intention of being made public 
+ - From a private source with no intention of being made public
  - Scripts where making a module does not make sense.
 
 ### Example 1
@@ -14,7 +14,7 @@ plotCNVplus
  - Clearly update the Documentation section of this README.md with the following information about the script.
     - How was the script acquired (git clone path, wget path)
     - What the Commit id is (git rev-parse --short HEAD)
-    
+
 ## Documentation
 ### plotCNVplus
 ```

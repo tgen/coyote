@@ -9,7 +9,7 @@
 
   {% set sample = files[0] %}
   {% set assaycode = sample.assayCode|default('unknown') %}
-  {% set chemistry = constants.phoenix.scrna_chemistry_options[sample.assayCode].chemistry_name %}
+  {% set chemistry = constants.coyote.scrna_chemistry_options[sample.assayCode].chemistry_name %}
 
   {% set alignment_outdir %}{{ sample.gltype }}/alignment/cellranger_count/{{ sample.name }}{% endset %}
   {% set outdir %}{{ sample.gltype }}/expression_estimates/cellranger_count/{{ sample.name }}{% endset %}
@@ -71,11 +71,11 @@
     ( cd {{ temp_dir }} && cellranger count \
       --localcores 20 \
       --localmem 160 \
-      --chemistry "{{ constants.phoenix.scrna_chemistry_options[sample.assayCode].chemistry_name }}" \
+      --chemistry "{{ constants.coyote.scrna_chemistry_options[sample.assayCode].chemistry_name }}" \
       --id "{{ sample.name }}" \
       --fastqs . \
       --sample "{{ samples_list|join(',') }}" \
-      --transcriptome "{{ constants.phoenix.cellranger_reference }}" )
+      --transcriptome "{{ constants.coyote.cellranger_reference }}" )
 
     {# cellranger defaults to an LB of 0.1, we fix that here since we know the LB #}
     samtools view -H {{ cellranger_out }}/possorted_genome_bam.bam |\

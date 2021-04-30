@@ -60,10 +60,10 @@
     VerifyBamID \
       --NumThread 1 \
       --DisableSanityCheck \
-      --UDPath "${VERIFY_BAM_ID_HOME}/resource/1000g.phase3.100k.b38.vcf.gz.dat.UD" \
-      --MeanPath "${VERIFY_BAM_ID_HOME}/resource/1000g.phase3.100k.b38.vcf.gz.dat.mu" \
-      --BedPath "${VERIFY_BAM_ID_HOME}/resource/1000g.phase3.100k.b38.vcf.gz.dat.bed" \
-      --Reference "{{ constants.phoenix.reference_fasta }}" \
+      --UDPath "${VERIFY_BAM_ID_HOME}/resource/1000g.phase3.100k.b37.vcf.gz.dat.UD" \
+      --MeanPath "${VERIFY_BAM_ID_HOME}/resource/1000g.phase3.100k.b37.vcf.gz.dat.mu" \
+      --BedPath "${VERIFY_BAM_ID_HOME}/resource/1000g.phase3.100k.b37.vcf.gz.dat.bed" \
+      --Reference "{{ constants.coyote.reference_fasta }}" \
       --BamFile "{{ bam }}" \
       --Output "{{ metrics }}"
 
@@ -151,9 +151,9 @@
     DEPTH_REQUIREMENT=5
 
     freebayes \
-      --fasta-reference "{{ constants.phoenix.reference_fasta }}" \
-      --targets "{{ constants.phoenix.sex_check_targets }}" \
-      --variant-input "{{ constants.phoenix.sex_check_vcf }}" \
+      --fasta-reference "{{ constants.coyote.reference_fasta }}" \
+      --targets "{{ constants.coyote.sex_check_targets }}" \
+      --variant-input "{{ constants.coyote.sex_check_vcf }}" \
       --only-use-input-alleles \
       --min-alternate-count 2 \
       --min-alternate-fraction 0.05 \
@@ -261,8 +261,8 @@
     # Only count read in the non-PAR regions
     ### WARNING: the tested regions needs to be a parameter NOT hard coded
     #}
-    READS_ON_X=`samtools view -c -q 30 -f 67 {{ bam }} chrX:2781480-155701382 chrX:156030896-156040895`
-    READS_ON_Y=`samtools view -c -q 30 -f 67 {{ bam }} chrY:2781480-56887902 chrY:57217416-57227415`
+    READS_ON_X=`samtools view -c -q 30 -f 67 {{ bam }} X:2781480-155701382 X:156030896-156040895`
+    READS_ON_Y=`samtools view -c -q 30 -f 67 {{ bam }} Y:2781480-56887902 Y:57217416-57227415`
 
     {# Calculate the Y/(X+Y) read ratio #}
     TOTAL_SEX_CHR_READS=$(echo $READS_ON_X $READS_ON_Y | gawk '{printf $1+$2}')

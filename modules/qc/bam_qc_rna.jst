@@ -43,13 +43,14 @@
 
     mkdir -p "{{ results_dir }}"
 
+    {# AAEX03026072.1 is the smallest contig in CanFam 3.1, length of 1115 #}
     gatk CollectRnaSeqMetrics \
       --java-options "-Xmx14G" \
-      --IGNORE_SEQUENCE chrEBV \
-      --STRAND_SPECIFICITY {{ constants.phoenix.strandedness_options[sample.strandedness].collectrnaseqmetrics }} \
+      --IGNORE_SEQUENCE AAEX03026072.1 \
+      --STRAND_SPECIFICITY {{ constants.coyote.strandedness_options[sample.strandedness].collectrnaseqmetrics }} \
       --VALIDATION_STRINGENCY LENIENT \
-      --REF_FLAT "{{ constants.phoenix.ref_flat }}" \
-      --RIBOSOMAL_INTERVALS "{{ constants.phoenix.ribo_locations }}" \
+      --REF_FLAT "{{ constants.coyote.ref_flat }}" \
+      --RIBOSOMAL_INTERVALS "{{ constants.coyote.ribo_locations }}" \
       --METRIC_ACCUMULATION_LEVEL ALL_READS \
       --METRIC_ACCUMULATION_LEVEL SAMPLE \
       --METRIC_ACCUMULATION_LEVEL LIBRARY \
@@ -120,17 +121,17 @@
 
     mkdir -p "{{ results_dir }}"
 
-    IGK=$(samtools view -@ 3 -c {{ bam }} chr2:88857160-90367699)
-    TRB=$(samtools view -@ 3 -c {{ bam }} chr7:142299176-142802748)
-    TRA=$(samtools view -@ 3 -c {{ bam }} chr14:21621837-22552156)
-    IGH=$(samtools view -@ 3 -c {{ bam }} chr14:105583730-106879812)
-    IGL=$(samtools view -@ 3 -c {{ bam }} chr22:21991098-22923034)
+    IGK=$(samtools view -@ 3 -c {{ bam }} 2:89050000-90300000)
+    TRB=$(samtools view -@ 3 -c {{ bam }} 7:141557800-142778700)
+    TRA=$(samtools view -@ 3 -c {{ bam }} 14:22089900-23021100)
+    IGH=$(samtools view -@ 3 -c {{ bam }} 14:106000000-107350000)
+    IGL=$(samtools view -@ 3 -c {{ bam }} 22:22350000-23400000)
 
-    echo -e "chr2\t88857160\t90367699\tIGK\t${IGK}" > {{ output }}
-    echo -e "chr7\t142299176\t142802748\tTRB\t${TRB}" >> {{ output }}
-    echo -e "chr14\t21621837\t22552156\tTRA\t${TRA}" >> {{ output }}
-    echo -e "chr14\t105583730\t106879812\tIGH\t${IGH}" >> {{ output }}
-    echo -e "chr22\t21991098\t22923034\tIGL\t${IGL}" >> {{ output }}
+    echo -e "2\t89050000\t90300000\tIGK\t${IGK}" > {{ output }}
+    echo -e "7\t141557800\t142778700\tTRB\t${TRB}" >> {{ output }}
+    echo -e "14\t22089990\t23021100\tTRA\t${TRA}" >> {{ output }}
+    echo -e "14\t106000000\t107350000\tIGH\t${IGH}" >> {{ output }}
+    echo -e "22\t22350000\t23400000\tIGL\t${IGL}" >> {{ output }}
 
     {% if libraryCount == 1 %}
       cp {{ output }} {{ sample_lb_output }}
