@@ -2,7 +2,7 @@ __pipeline__:
   name: coyote
   main: main.jst
   description: Canine (canfam3.1) genomics suite
-  version: v1.0.2
+  version: v1.1.2
 constants:
   tools:
     bedtools:
