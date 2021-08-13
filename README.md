@@ -283,58 +283,58 @@ _Click to show details_
 <summary><b>Public Tools Used by the Workflow</b></summary>  
 
 All tools build with public easybuild configuration files, available [here](https://github.com/easybuilders/easybuild).<br/>
-*Last Updated Jan 29th, 2021*  
+*Last Updated July 29th, 2021*  
 
 | Tool | Version Implemented | Current Version | Dependency and Notes | EasyBuild |
 | :---: | :---: | :---: | :--- | :---: |
-| [bcftools](https://github.com/samtools/bcftools/releases) | 1.10.2 | **1.11** | | Yes |
+| [bcftools](https://github.com/samtools/bcftools/releases) | 1.10.2 | **1.13** | | Yes |
 | [bedtools](https://github.com/arq5x/bedtools2/releases) | 2.29.0 | **2.30.0** | delly-filter, addmatchRNA, vardict, vcfmerger2 | Yes |
-| [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) | 2.3.5.1 | **2.4.2** | star-fusion | Yes |
+| [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) | 2.3.5.1 | **2.4.4** | star-fusion | Yes |
 | [bwa](https://github.com/lh3/bwa/releases) | 0.7.17 | 0.7.17 | | Yes |
-| [cellranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/count) | 3.1.0 | **5.0** | | Yes |
-| [cuda-toolkit](https://developer.nvidia.com/cuda-downloads) | 10.1.243 | **11.2** | | No |
-| [deepvariant](https://github.com/google/deepvariant/releases) | 0.10.0 | **1.1.0** | singularity container | Yes |
+| [cellranger](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/using/count) | 6.0 | 6.0 | | Yes |
+| [cuda-toolkit](https://developer.nvidia.com/cuda-downloads) | 10.1.243 | **11.4** | | No |
+| [deepvariant](https://github.com/google/deepvariant/releases) | 0.10.0 | **1.2.0** | singularity container | Yes |
 | [delly](https://github.com/dellytools/delly/releases) | 0.7.6 | **0.8.7** | staying with 0.7.6 for compatibility reasons | Yes |
 | [dle](https://github.com/tgen/Discordant_Loci_Extractor/releases) | 0.1.5 | 0.1.5 | private repo | No |
-| [freebayes](https://github.com/ekg/freebayes/releases) | 1.3.1 | **1.3.4** | 1.3.2 ensures python3 compatibility | Yes |
-| [gatk](https://github.com/broadinstitute/gatk//releases) | 4.1.8.0 | **4.1.9.0** |  | Yes |
-| [gmap-gsnp](http://research-pub.gene.com/gmap/) | 2019-09-12 | **2020-12-17** | star-fusion | Yes |
-| [gridss](https://github.com/PapenfussLab/gridss/releases) | 2.6.3 | **2.10.2** |  | |
+| [freebayes](https://github.com/ekg/freebayes/releases) | 1.3.1 | **1.3.4** | | Yes |
+| [gatk](https://github.com/broadinstitute/gatk//releases) | 4.1.8.0 | **4.2.0.0** |  | Yes |
+| [gmap-gsnp](http://research-pub.gene.com/gmap/) | 2019-09-12 | **2021-07-23** | star-fusion | Yes |
+| [gridss](https://github.com/PapenfussLab/gridss/releases) | 2.6.3 | **2.12.0** |  | |
 | [hmmcopyutils](https://github.com/shahcompbio/hmmcopy_utils) | 1.0 | 1.0 | no official release | Yes |
 | [htseq](https://github.com/htseq/htseq/releases) | 0.12.3 | **0.13.5** | | |
-| [htslib](https://github.com/samtools/htslib/releases) | 1.10.2 | **1.11** | star-fusion(bgzip) | Yes |
+| [htslib](https://github.com/samtools/htslib/releases) | 1.10.2 | **1.13** | star-fusion(bgzip) | Yes |
 | [ichor](https://github.com/broadinstitute/ichorCNA/releases) | 0.2.0 | 0.2.0 | package in R/3.6.1-phoenix module | Yes? |
 | [jellyfish](https://github.com/gmarcais/Jellyfish/releases) | 2.3.0 | 2.3.0 | star-fusion | Yes |
 | [lancet](https://github.com/nygenome/lancet/releases) | 1.1.0 | 1.1.0 | | Yes |
 | [lumosVar2](https://github.com/tgen/lumosVar2/releases) | 1.1 | 1.1 | | Yes |
 | [manta](https://github.com/Illumina/manta/releases) | 1.6.0 | 1.6.0 | | Yes |
 | [manta_tgen](https://github.com/tgen/manta/releases) | 1.6.0 | 1.6.0 | modified for internal use | No |
-| [multiQC](https://github.com/ewels/MultiQC/releases) | 1.9 | 1.9 | python3 pip | Yes |
-| [octopus](https://github.com/luntergroup/octopus/releases) | 0.6.3-beta | **0.7.0** | | Yes |
-| [openmpi](https://github.com/open-mpi/ompi/releases) | 3.1.3 | **4.1.0** | delly | No |
+| [multiQC](https://github.com/ewels/MultiQC/releases) | 1.9 | **1.11**| python3 pip | Yes |
+| [octopus](https://github.com/luntergroup/octopus/releases) | 0.6.3-beta | **0.7.4** | | Yes |
+| [openmpi](https://github.com/open-mpi/ompi/releases) | 3.1.3 | **4.1.1** | delly | No |
 | [pairoscope](https://github.com/genome/pairoscope/releases) | 0.4.2 | 0.4.2 | | Yes |
-| [perl](https://github.com/Perl/perl5/releases) | 5.28.1 | **5.33.6** | star-fusion | Yes |
+| [perl](https://github.com/Perl/perl5/releases) | 5.28.1 | **5.35.2** | star-fusion | Yes |
 | [phaser](https://github.com/secastel/phaser/tree/master/phaser) | 1.1.1 | 1.1.1 | vcfmerger2 | Yes |
 | [python2](https://www.python.org/downloads/) | 2.7.15 | **2.7.18** | | Yes |
-| [python3](https://www.python.org/downloads/) | 3.7.2 | **3.9.1** | star-fusion, vcfmerger2 | Yes |
-| [R](https://www.r-project.org/) | 3.6.1 | **4.0.3** | gatk cnv, varDict, vcfmerger2 | Yes |
-| [salmon](https://github.com/COMBINE-lab/salmon/releases) | 1.2.1 | **1.4.0** | self, star-fusion | Yes |
+| [python3](https://www.python.org/downloads/) | 3.7.2 | **3.9.6** | star-fusion, vcfmerger2 | Yes |
+| [R](https://www.r-project.org/) | 3.6.1 | **4.1.0** | gatk cnv, varDict, vcfmerger2 | Yes |
+| [salmon](https://github.com/COMBINE-lab/salmon/releases) | 1.2.1 | **1.5.2** | self, star-fusion | Yes |
 | [sambamba](https://github.com/biod/sambamba/releases) | 0.7.0 | **0.8.0** | | |
 | [samblaster](https://github.com/GregoryFaust/samblaster/releases) | 0.1.24 | **0.1.26** | | |
-| [samtools](https://github.com/samtools/samtools/releases) | 1.10 | **1.11** | | Yes |
-| [singularity](https://github.com/sylabs/singularity/releases) | 3.5.2 | **3.7.1** | deepvariant | Yes, release-candidate |
+| [samtools](https://github.com/samtools/samtools/releases) | 1.10 | **1.13** | | Yes |
+| [singularity](https://github.com/sylabs/singularity/releases) | 3.5.2 | **3.8.1** | deepvariant | Yes |
 | [snpEff](https://sourceforge.net/projects/snpeff/files/) | 4.3t | **4.5covid19** | covid related release? | Yes |
 | [snpSniffer](https://github.com/tgen/snpSniffer/releases) | 7.0.0 | 7.0.0 | | No |
-| [star](https://github.com/alexdobin/STAR/releases) | 2.7.5a | **2.7.7a** | self, star-fusion | Yes |
-| [star-fusion](https://github.com/STAR-Fusion/STAR-Fusion/releases) | 1.8.1 | **1.9.1** | | Yes |
+| [star](https://github.com/alexdobin/STAR/releases) | 2.7.5a | **2.7.9a** | self, star-fusion | Yes |
+| [star-fusion](https://github.com/STAR-Fusion/STAR-Fusion/releases) | 1.8.1 | **1.10.1** | | Yes |
 | [strelka](https://github.com/Illumina/strelka/releases) | 2.9.10 | 2.9.10 | | Yes |
-| [subread](https://sourceforge.net/projects/subread/) | 2.0.0 | **2.0.1** | part of subread package | Yes |
-| [tgen_mutation_burden](https://github.com/tgen/tgen_mutation_burden/releases) | 1.2.1 | 1.2.1 | | No |
+| [subread](https://sourceforge.net/projects/subread/) | 2.0.0 | **2.0.3** | part of subread package | Yes |
+| [tgen_mutation_burden](https://github.com/tgen/tgen_mutation_burden/releases) | 1.2.3 | 1.2.3 | | No |
 | [transParser](https://github.com/tgen/transParser/releases) | 1.0.1 | 1.0.1 | | No |
-| [trinityrnaseq](https://github.com/trinityrnaseq/trinityrnaseq/releases) | 2.8.6 | **2.11.0** | star-fusion | Yes |
+| [trinityrnaseq](https://github.com/trinityrnaseq/trinityrnaseq/releases) | 2.8.6 | **2.12.0** | star-fusion | Yes |
 | [vardictJava](https://github.com/AstraZeneca-NGS/VarDictJava/releases) | 1.7.0 | **1.8.2** | | Yes |
 | [vcfmerger2](https://github.com/tgen/vcfMerger2/releases) | 0.8.7 | 0.8.7 | | Yes |
-| [vep](https://github.com/Ensembl/ensembl-vep/releases) | 98.3 | **102.0** | | Yes |
+| [vep](https://github.com/Ensembl/ensembl-vep/releases) | 98.3 | **104.3** | | Yes |
 | [verifybamid2](https://github.com/Griffan/VerifyBamID/releases) | 1.0.6 | **2.0.1** | | Yes |
 | [vt](https://github.com/atks/vt/releases) | 0_57721 | 0_57721 | | Yes |
 

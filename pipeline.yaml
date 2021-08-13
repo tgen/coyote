@@ -37,10 +37,14 @@ constants:
       citation: >
         Li H. and Durbin R. (2009) Fast and accurate short read alignment with Burrows-Wheeler Transform.
         Bioinformatics, 25:1754-60. [PMID: 19451168]
+    bwa_mem2:
+      module: bwa-mem2/2.2.1
+      version: "2.2.1"
+      verbose: Burrows-Wheeler Aligner v2.2.1
     cellranger:
-      module: cellranger/3.1.0
-      version: "3.1.0"
-      verbose: 10X CellRanger v3.1.0
+      module: cellranger/6.0.1
+      version: "6.0.1"
+      verbose: 10X CellRanger v6.0.1
       website: https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/what-is-cell-ranger
       citation: >
         TODO
@@ -73,6 +77,14 @@ constants:
       module: DLE/0.1.5
       version: "0.1.5"
       verbose: Discordant Loci Extractor v0.1.5
+    expansion_hunter:
+      module: ExpansionHunter/4.0.2
+      version: "4.0.2"
+      verbose: Illumina ExpansionHunter v4.0.2
+      citation: >
+        Egor Dolzhenko, Viraj Deshpande, Felix Schlesinger, Peter Krusche, Roman Petrovski, and others,
+        ExpansionHunter: A sequence-graph based tool to analyze variation in short tandem repeat regions,
+        Bioinformatics 2019
     freebayes:
       module: freebayes/1.3.1-foss-2019a
       version: "1.3.1"
@@ -209,6 +221,10 @@ constants:
       website: https://github.com/genome/pairoscope
       citation: >
         TBD
+    petagene:
+      module: petagene/1.3.0p7
+      version: 1.3.0p7
+      PetaLinkMode: "+fastq"
     phaser:
       module: phASER/1.1.1-python-2.7.13
       version: 1.1.1
@@ -239,6 +255,14 @@ constants:
       citation: >
         R Core Team (2017). R: A language and environment for statistical computing. R Foundation for
         Statistical Computing, Vienna, Austria. URL https://www.R-project.org/.
+    rsem:
+      module: RSEM/1.3.3
+      version: "1.3.3"
+      verbose: rsem v1.3.3
+      website: https://github.com/deweylab/RSEM
+      citation: >
+        Li, B., Dewey, C.N. RSEM: accurate transcript quantification from RNA-Seq data with or without a reference
+        genome. BMC Bioinformatics 12, 323 (2011). https://doi.org/10.1186/1471-2105-12-323
     salmon:
       module: Salmon/1.2.1-gompi-2019a
       version: "1.2.1"
@@ -268,6 +292,10 @@ constants:
       module: sequenza/3.0.0
       version: "3.0.0"
       verbose: Sequenza v3.0.0
+    sigprofiler:
+      module: SigProfiler/1.1
+      version: "1.1"
+      verbose: SigProfiler v1.1
     singularity:
       module: singularity/3.5.2-phoenix
       version: "3.5.2"
@@ -326,9 +354,13 @@ constants:
         Liao Y, Smyth GK and Shi W. featureCounts: an efficient general-purpose program for assigning
         sequence reads to genomic features. Bioinformatics, 30(7):923-30, 2014
     tgen_mutation_burden:
-      module: MutationBurden/1.2.1
-      version: "1.2.1"
-      verbose: TGen Mutation Burden Tool v1.2.1
+      module: MutationBurden/1.2.3
+      version: "1.2.3"
+      verbose: TGen Mutation Burden Tool v1.2.3
+    thred:
+      module: tHReD/1.1.0
+      version: "1.1.0"
+      verbose: tHReD v1.1.0
     transparser:
       module: transParser/1.0.1
       version: "1.0.1"
@@ -398,39 +430,39 @@ constants:
     delly_svtop_delly_sv_annotation_parellel_script: svtop.delly.sv_annotation.parallel_8820499.py
     manta_prepare_sv_vcf: manta_prepare_sv_vcf_f94bcc1.py
     manta_gene_annotation_parallel: manta_sv_annotation_parallel_8820499.py
-    pairoscope_mm_igtx_calling_script: mm_igtx_pairoscope_calling_b38_f3010c3.py
-    pairoscope_mm_igtx_calling_tumor_only_script: mm_igtx_pairoscope_calling_b38_tumor_only_39d1efa.py
+    pairoscope_mm_igtx_calling_script: mm_igtx_pairoscope_calling_b38_356362b.py
     cna_seg_extend: seg_extend_229b8c7.py
     plotCNVplus_Rscript: plotCNVplus_4d89cb4.R
     plotSamStats_Rscript: summarize_samstats_8c45d63.R
-    summarize_mm_igtx_Rscript: summarize_Ig_4b93aee.R
-    process_assembled_bam: Process_Assembled_BAM_eb25fca.py
+    summarize_mm_igtx_Rscript: summarize_Ig_875a823.R
+    process_assembled_bam: Process_Assembled_BAM_277eed7.py
     stats2json: samStats2json_3a90a2f.py
     stats2lims: uploadStats2Lims_1ace81f.py
-    annotSeg_script: annotSeg_8820499.pl
-    cellranger_reference: /home/tgenref/canis_familiaris/canfam3.1/tool_specific_resources/cellranger/refdata-cellranger-hg19-1.2.0
-    cellranger_vdj_reference: /home/tgenref/canis_familiaris/canfam3.1/tool_specific_resources/cellranger/refdata-cellranger-hg19-1.2.0
+    sigprofiler: sigprofiler_7595614.py
+    annotSeg_script: annotSeg_7102f1c.pl
+    cellranger_reference: /home/tgenref/homo_sapiens/grch38_hg38/hg38tgen/gene_model/ensembl_v98/tool_resources/cellranger_6.0.0/hg38tgen_ensembl_v98
+    cellranger_vdj_reference: /home/tgenref/homo_sapiens/grch38_hg38/tool_specific_resources/cellranger/refdata-cellranger-vdj-GRCh38-alts-ensembl-5.0.0
     scrna_chemistry_options:
       X3SCR:
         chemistry_name: SC3Pv1
         umi_length: 10
-        cell_barcode_whitelist_file: /packages/cellranger/3.1.0/cellranger-cs/3.1.0/lib/python/cellranger/barcodes/737K-april-2014_rc.txt
+        cell_barcode_whitelist_file: /packages/easy-build/software/CellRanger/6.0.0/lib/python/cellranger/barcodes/737K-april-2014_rc.txt
       XCSCR:
         chemistry_name: SC3Pv2
         umi_length: 10
-        cell_barcode_whitelist_file: /packages/cellranger/3.1.0/cellranger-cs/3.1.0/lib/python/cellranger/barcodes/737K-august-2016.txt
+        cell_barcode_whitelist_file: /packages/easy-build/software/CellRanger/6.0.0/lib/python/cellranger/barcodes/737K-august-2016.txt
       X3SC3:
         chemistry_name: SC3Pv3
         umi_length: 12
-        cell_barcode_whitelist_file: /packages/cellranger/3.1.0/cellranger-cs/3.1.0/lib/python/cellranger/barcodes/3M-february-2018.txt.gz
+        cell_barcode_whitelist_file: /packages/easy-build/software/CellRanger/6.0.0/lib/python/cellranger/barcodes/3M-february-2018.txt
       X5SCR:
         chemistry_name: SC5P-R2
         umi_length: 10
-        cell_barcode_whitelist_file: /packages/cellranger/3.1.0/cellranger-cs/3.1.0/lib/python/cellranger/barcodes/737K-august-2016.txt
+        cell_barcode_whitelist_file: /packages/easy-build/software/CellRanger/6.0.0/lib/python/cellranger/barcodes/737K-august-2016.txt
       unknown:
         chemistry_name: auto
         umi_lenth: 10
-        cell_barcode_whitelist_file: /packages/cellranger/3.1.0/cellranger-cs/3.1.0/lib/python/cellranger/barcodes/737K-august-2016.txt
+        cell_barcode_whitelist_file: /packages/easy-build/software/CellRanger/6.0.0/lib/python/cellranger/barcodes/737K-august-2016.txt
     gatk_known_sites:
       - /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/public_databases/eva/GCA_000002285.2_current_ids_renamed.vcf.gz
     gatk_cnn_resources:
@@ -453,18 +485,21 @@ constants:
     starfusion_index: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/gene_model/ensembl_v98/tool_resources/starFusion_ensembl_v98/starFusion_Resources/ctat_genome_lib_build_dir
     strandedness_options:
       inward-unstranded-notapplicable:
+        rsem: "none"
         salmon: "IU"
         htseq: "no"
         featurecounts: "0"
         tophat: "-fr-unstranded"
         collectrnaseqmetrics: "NONE"
       inward-stranded-forward:
+        rsem: "forward"
         salmon: "ISF"
         htseq: "yes"
         featurecounts: "1"
         tophat: "-fr-secondstrand"
         collectrnaseqmetrics: "FIRST_READ_TRANSCRIPTION_STRAND"
       inward-stranded-reverse:
+        rsem: "reverse"
         salmon: "ISR"
         htseq: "reverse"
         featurecounts: "2"

@@ -66,6 +66,14 @@
     set -o pipefail
     module load {{ constants.tools.star.module }}
 
+    {% if r1fqlist[0].fileType == "fasterq" %}
+      export PetaLinkMode="{{ constants.tools.petagene.PetaLinkMode }}"
+      module load {{ constants.tools.petagene.module }}
+
+    {% endif %}
+    {#
+      This comment is here for protect render spacing, do not remove.
+    #}
     mkdir -p "{{ temp_dir }}"
     mkdir -p "{{ results_dir }}/stats"
     mkdir -p "{{ star_finalcountsdir }}"
@@ -338,7 +346,8 @@ which appears to be working now after some code changes, keeping this here in ca
     {% set task %}markduplicates_star_gatk_{{ sample.name }}{% endset %}
     {% do task_list.append(task) %}
 
-    {{- remove_files(temp_dir,none,task_list) }}
+    {% set task_name %}{{ sample.name }}_star_quant{% endset %}
+    {{- remove_files(temp_dir, none, task_list, task_name) }}
 {% endmacro %}
 
 {% macro htseq(sample) %}
