@@ -473,8 +473,8 @@ which appears to be working now after some code changes, keeping this here in ca
       --alignments \
       --paired-end \
       --no-bam-output \
-      --strandedness "{{ constants.phoenix.strandedness_options[sample.strandedness].rsem }}" \
+      --strandedness "{{ constants.coyote.strandedness_options[sample.strandedness].rsem }}" \
       {{ star_bam_transcript }} \
-      {{ constants.phoenix.rsem_index }} \
+      {{ constants.coyote.rsem_index }} \
       "{{ sample.gltype }}/quant/rsem/{{ sample.name }}/{{ sample.name }}"
 {% endmacro %}

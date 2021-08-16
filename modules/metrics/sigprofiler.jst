@@ -58,11 +58,12 @@
     mkdir -p {{ temp_dir }}/vcfs
     mkdir -p {{ results_dir }}
 
-    python3 ${JS_PIPELINE_PATH}/required_scripts/{{ constants.phoenix.sigprofiler }} \
+    python3 ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.sigprofiler }} \
       --threads 10 \
       --vcfpath {{ temp_dir }}/vcfs \
       --output {{ temp_dir }} \
-      --project {{ pair.name }}
+      --project {{ pair.name }} \
+      --genome CanFam3.1
 
     {# It's possible for no signatures to be found, so we need an if statement to check for output #}
     if [ "$(ls -A {{ temp_dir }}/vcfs/output)" ]; then
