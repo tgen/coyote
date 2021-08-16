@@ -138,7 +138,7 @@ constants:
         HTSeq — A Python framework to work with high-throughput sequencing data
         Bioinformatics (2014), in print, online at doi:10.1093/bioinformatics/btu638
     ichorcna:
-      module: R/3.6.1-phoenix
+      module: ichorCNA/0.2.0-coyote
       launcher: required_scripts/runIchorCNA_47ce8db.R
       version: "0.2.0"
       verbose: ichorCNA v0.2.0
