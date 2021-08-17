@@ -244,7 +244,7 @@
     {% endfor %}
   output:
     - {{ temp_dir }}/{{ sample.name }}.bwa.md.bam
-    - {{ results_dir }}/stats/{{ sample.name }}.bwa.bam.samtools_markdup.txt
+    - {{ results_dir }}/stats/{{ sample.name }}.bwa.bam.samtools.markdup.txt
   walltime: "48:00:00"
   cpus: 8
   mem: 16G
@@ -303,10 +303,10 @@
       cut -d':' -f1 |\
       paste - {{ temp_dir }}/stats/{{ sample.name }}.bwa.bam.samtools_markdup_merge.txt |\
       sed 's/\t/: /g' \
-      > {{ results_dir }}/stats/{{ sample.name }}.bwa.bam.samtools_markdup.txt
+      > {{ results_dir }}/stats/{{ sample.name }}.bwa.bam.samtools.markdup.txt
 
     {# insert COMMAND: into the top of the merged file #}
     header=$(head -n 1 {{ temp_dir }}/stats/{{ sample.name }}_{{ first_sample_rgid }}.bwa.bam.samtools.markdup.txt)
-    sed -i "1i ${header}" {{ results_dir }}/stats/{{ sample.name }}.bwa.bam.samtools_markdup.txt
+    sed -i "1i ${header}" {{ results_dir }}/stats/{{ sample.name }}.bwa.bam.samtools.markdup.txt
 
 {% endmacro %}
