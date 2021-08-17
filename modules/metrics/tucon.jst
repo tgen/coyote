@@ -31,7 +31,7 @@
 
     VCF_BASE=$(basename {{ filtered_vcf }})
     MUT_COUNT=$(bcftools view -H {{ filtered_vcf }} | wc -l)
-    TOPMED_COUNT=$(bcftools view -H -i 'INFO/TOPMED=1 & INFO/TOPMED_AF>0.00001' {{ filtered_vcf }} | wc -l)
-    echo -e "${VCF_BASE}\t${MUT_COUNT}\t${TOPMED_COUNT}" >> {{ tucon_output }}
+    EVA_COUNT=$(bcftools view -H -i 'INFO/GCA_2285.2=1' {{ filtered_vcf }} | wc -l)
+    echo -e "${VCF_BASE}\t${MUT_COUNT}\t${EVA_COUNT}" >> {{ tucon_output }}
 
 {% endmacro %}
