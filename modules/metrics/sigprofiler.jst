@@ -63,7 +63,7 @@
       --vcfpath {{ temp_dir }}/vcfs \
       --output {{ temp_dir }} \
       --project {{ pair.name }} \
-      --genome CanFam3.1
+      --genome dog
 
     {# It's possible for no signatures to be found, so we need an if statement to check for output #}
     if [ "$(ls -A {{ temp_dir }}/vcfs/output)" ]; then
