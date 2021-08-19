@@ -16,31 +16,27 @@
   input:
     - {{ filt_vcf }}
   output:
-    - {{ results_dir }}/SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/Activities/COSMIC_SBS96_Activities_refit.txt
-    - {{ results_dir }}/SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/Activities/COSMIC_SBS96_Activity_Plots_refit.pdf
-    - {{ results_dir }}/SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/Activities/COSMIC_SBS96_TMB_plot_refit.pdf
-    - {{ results_dir }}/SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/Activities/Decomposed_Mutation_Probabilities.txt
-    - {{ results_dir }}/SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/Signatures/COSMIC_SBS96_Signatures.txt
-    - {{ results_dir }}/SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/Signatures/SBS_96_plots_COSMIC_SBS96.pdf
-    - {{ results_dir }}/SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/De_Novo_map_to_COSMIC_SBS96.csv
-    - {{ results_dir }}/SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/SBS96_Decomposition_Plots.pdf
-    - {{ results_dir }}/ID83/Suggested_Solution/COSMIC_ID83_Decomposed_Solution/Activities/COSMIC_ID83_Activities_refit.txt
-    - {{ results_dir }}/ID83/Suggested_Solution/COSMIC_ID83_Decomposed_Solution/Activities/COSMIC_ID83_Activity_Plots_refit.pdf
-    - {{ results_dir }}/ID83/Suggested_Solution/COSMIC_ID83_Decomposed_Solution/Activities/COSMIC_ID83_TMB_plot_refit.pdf
-    - {{ results_dir }}/ID83/Suggested_Solution/COSMIC_ID83_Decomposed_Solution/Activities/Decomposed_Mutation_Probabilities.txt
-    - {{ results_dir }}/ID83/Suggested_Solution/COSMIC_ID83_Decomposed_Solution/Signatures/COSMIC_ID83_Signatures.txt
-    - {{ results_dir }}/ID83/Suggested_Solution/COSMIC_ID83_Decomposed_Solution/Signatures/ID_83_plots_COSMIC_ID83.pdf
-    - {{ results_dir }}/ID83/Suggested_Solution/COSMIC_ID83_Decomposed_Solution/De_Novo_map_to_COSMIC_ID83.csv
-    - {{ results_dir }}/ID83/Suggested_Solution/COSMIC_ID83_Decomposed_Solution/ID83_Decomposition_Plots.pdf
-    - {{ results_dir }}/DBS78/Suggested_Solution/COSMIC_DBS78_Decomposed_Solution/Activities/COSMIC_DBS78_Activities_refit.txt
-    - {{ results_dir }}/DBS78/Suggested_Solution/COSMIC_DBS78_Decomposed_Solution/Activities/COSMIC_DBS78_Activity_Plots_refit.pdf
-    - {{ results_dir }}/DBS78/Suggested_Solution/COSMIC_DBS78_Decomposed_Solution/Activities/COSMIC_DBS78_TMB_plot_refit.pdf
-    - {{ results_dir }}/DBS78/Suggested_Solution/COSMIC_DBS78_Decomposed_Solution/Activities/Decomposed_Mutation_Probabilities.txt
-    - {{ results_dir }}/DBS78/Suggested_Solution/COSMIC_DBS78_Decomposed_Solution/Signatures/COSMIC_DBS78_Signatures.txt
-    - {{ results_dir }}/DBS78/Suggested_Solution/COSMIC_DBS78_Decomposed_Solution/Signatures/DBS_78_plots_COSMIC_DBS78.pdf
-    - {{ results_dir }}/DBS78/Suggested_Solution/COSMIC_DBS78_Decomposed_Solution/De_Novo_map_to_COSMIC_DBS78.csv
-    - {{ results_dir }}/DBS78/Suggested_Solution/COSMIC_DBS78_Decomposed_Solution/DBS78_Decomposition_Plots.pdf
-    - {{ results_dir }}/extraneous_results.tar
+    - {{ results_dir }}/SBS/{{ pair.name }}.SBS6.all
+    - {{ results_dir }}/SBS/{{ pair.name }}.SBS18.all
+    - {{ results_dir }}/SBS/{{ pair.name }}.SBS24.all
+    - {{ results_dir }}/SBS/{{ pair.name }}.SBS96.all
+    - {{ results_dir }}/SBS/{{ pair.name }}.SBS288.all
+    - {{ results_dir }}/SBS/{{ pair.name }}.SBS384.all
+    - {{ results_dir }}/SBS/{{ pair.name }}.SBS1536.all
+    - {{ results_dir }}/SBS/{{ pair.name }}.SBS4608.all
+    - {{ results_dir }}/SBS/{{ pair.name }}.SBS6144.all
+    - {{ results_dir }}/ID/{{ pair.name }}.ID28.all
+    - {{ results_dir }}/ID/{{ pair.name }}.ID83.all
+    - {{ results_dir }}/ID/{{ pair.name }}.ID96.all
+    - {{ results_dir }}/ID/{{ pair.name }}.ID332.all
+    - {{ results_dir }}/ID/{{ pair.name }}.ID415.all
+    - {{ results_dir }}/ID/{{ pair.name }}.ID8628.all
+    - {{ results_dir }}/DBS/{{ pair.name }}.DBS78.all
+    - {{ results_dir }}/DBS/{{ pair.name }}.DBS150.all
+    - {{ results_dir }}/DBS/{{ pair.name }}.DBS186.all
+    - {{ results_dir }}/DBS/{{ pair.name }}.DBS1248.all
+    - {{ results_dir }}/DBS/{{ pair.name }}.DBS2400.all
+    - {{ results_dir }}/DBS/{{ pair.name }}.DBS2976.all
   walltime: "24:00:00"
   cpus: 10
   mem: 8G
@@ -63,48 +59,40 @@
       --vcfpath {{ temp_dir }}/vcfs \
       --output {{ temp_dir }} \
       --project {{ pair.name }} \
-      --genome dog
+      --genome dog \
+      --matrix_only
 
     {# It's possible for no signatures to be found, so we need an if statement to check for output #}
     if [ "$(ls -A {{ temp_dir }}/vcfs/output)" ]; then
-      {# Remove true temp files #}
-      rm -r {{ temp_dir }}/Decompose_Solution {{ temp_dir }}/De_Novo_Solution {{ temp_dir }}/JOB_METADATA.txt {{ temp_dir }}/Seeds.txt
-
       {# Prepare the known useful output #}
       {# rsync -R copies the relative path after the /./ section #}
-      if [ -d "{{ temp_dir }}/SBS96/Suggested_Solution" ]; then
-      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/Activities/COSMIC_SBS96_Activities_refit.txt {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/Activities/COSMIC_SBS96_Activity_Plots_refit.pdf {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/Activities/COSMIC_SBS96_TMB_plot_refit.pdf {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/Activities/Decomposed_Mutation_Probabilities.txt {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/Signatures/COSMIC_SBS96_Signatures.txt {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/Signatures/SBS_96_plots_COSMIC_SBS96.pdf {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/De_Novo_map_to_COSMIC_SBS96.csv {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/COSMIC_SBS96_Decomposed_Solution/SBS96_Decomposition_Plots.pdf {{ results_dir }}
+      if [ -d "{{ temp_dir }}/vcfs/output/SBS" ]; then
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS6.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS18.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS24.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS96.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS288.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS384.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS1536.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS4608.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS6144.all {{ results_dir }}
       fi
-      if [ -d "{{ temp_dir }}/ID83/Suggested_Solution" ]; then
-      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/COSMIC_ID83_Decomposed_Solution/Activities/COSMIC_ID83_Activities_refit.txt {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/COSMIC_ID83_Decomposed_Solution/Activities/COSMIC_ID83_Activity_Plots_refit.pdf {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/COSMIC_ID83_Decomposed_Solution/Activities/COSMIC_ID83_TMB_plot_refit.pdf {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/COSMIC_ID83_Decomposed_Solution/Activities/Decomposed_Mutation_Probabilities.txt {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/COSMIC_ID83_Decomposed_Solution/Signatures/COSMIC_ID83_Signatures.txt {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/COSMIC_ID83_Decomposed_Solution/Signatures/ID_83_plots_COSMIC_ID83.pdf {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/COSMIC_ID83_Decomposed_Solution/De_Novo_map_to_COSMIC_ID83.csv {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/COSMIC_ID83_Decomposed_Solution/ID83_Decomposition_Plots.pdf {{ results_dir }}
+      if [ -d "{{ temp_dir }}/vcfs/output/ID" ]; then
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./ID/{{ pair.name }}.ID28.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./ID/{{ pair.name }}.ID83.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./ID/{{ pair.name }}.ID96.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./ID/{{ pair.name }}.ID332.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./ID/{{ pair.name }}.ID415.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./ID/{{ pair.name }}.ID8628.all {{ results_dir }}
       fi
-      if [ -d "{{ temp_dir }}/DBS78/Suggested_Solution" ]; then
-      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/COSMIC_DBS78_Decomposed_Solution/Activities/COSMIC_DBS78_Activities_refit.txt {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/COSMIC_DBS78_Decomposed_Solution/Activities/COSMIC_DBS78_Activity_Plots_refit.pdf {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/COSMIC_DBS78_Decomposed_Solution/Activities/COSMIC_DBS78_TMB_plot_refit.pdf {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/COSMIC_DBS78_Decomposed_Solution/Activities/Decomposed_Mutation_Probabilities.txt {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/COSMIC_DBS78_Decomposed_Solution/Signatures/COSMIC_DBS78_Signatures.txt {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/COSMIC_DBS78_Decomposed_Solution/Signatures/DBS_78_plots_COSMIC_DBS78.pdf {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/COSMIC_DBS78_Decomposed_Solution/DBS78_Decomposition_Plots.pdf {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/COSMIC_DBS78_Decomposed_Solution/De_Novo_map_to_COSMIC_DBS78.csv {{ results_dir }}
+      if [ -d "{{ temp_dir }}/vcfs/output/DBS" ]; then
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./DBS/{{ pair.name }}.DBS78.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./DBS/{{ pair.name }}.DBS150.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./DBS/{{ pair.name }}.DBS186.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./DBS/{{ pair.name }}.DBS1248.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./DBS/{{ pair.name }}.DBS2400.all {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./DBS/{{ pair.name }}.DBS2976.all {{ results_dir }}
       fi
-
-      {# tar the files that are not known to be immediately important #}
-      tar -cvf {{ results_dir }}/extraneous_results.tar {{ temp_dir }}/*
     else
       echo "No signatures found"
     fi
