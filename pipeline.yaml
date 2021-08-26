@@ -468,6 +468,7 @@ constants:
     gatk_cnn_resources:
       - /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/public_databases/eva/GCA_000002285.2_current_ids_renamed.vcf.gz
     bwa_index: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/tool_resources/bwa_0.7.17/Canis_familiaris.CanFam3.1.dna.toplevel.fa
+    bwa_mem2_index: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/tool_resources/bwa_2.2.1/Canis_familiaris.CanFam3.1.dna.toplevel.fa
     gtf: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/gene_model/ensembl_v98/Canis_familiaris.CanFam3.1.98.gtf
     ref_flat: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/gene_model/ensembl_v98/Canis_familiaris.CanFam3.1.98.refFlat.txt
     ribo_locations: /home/tgenref/canis_familiaris/canfam3.1/canfam3.1_tgen/gene_model/ensembl_v98/Canis_familiaris.CanFam3.1.98.ribo.interval_list
