@@ -137,12 +137,12 @@
       --resource "{{ resource }}" \
       {% endfor %}
       --variant "{{ all_vcf }}" \
-      --output "{{ temp_dir }}/{{ sample.name }}.hc.fvt.vcf.gz" \
-       
+      --output "{{ temp_dir }}/{{ sample.name }}.hc.fvt.vcf.gz"
+
     {# Then filter out the passing variants to a separate file #}
     bcftools filter \
       --output-type z \
-      --include 'FILTER == "."' \
+      --include 'FILTER == "PASS"' \
       {% if sample.gltype == 'exome' %}
       --targets-file "{{ sample.capture_kit.extended_bed }}" \
       {% endif %}
