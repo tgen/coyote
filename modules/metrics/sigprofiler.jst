@@ -16,27 +16,25 @@
   input:
     - {{ filt_vcf }}
   output:
-    - {{ results_dir }}/SBS/{{ pair.name }}.SBS6.all
-    - {{ results_dir }}/SBS/{{ pair.name }}.SBS18.all
-    - {{ results_dir }}/SBS/{{ pair.name }}.SBS24.all
-    - {{ results_dir }}/SBS/{{ pair.name }}.SBS96.all
-    - {{ results_dir }}/SBS/{{ pair.name }}.SBS288.all
-    - {{ results_dir }}/SBS/{{ pair.name }}.SBS384.all
-    - {{ results_dir }}/SBS/{{ pair.name }}.SBS1536.all
-    - {{ results_dir }}/SBS/{{ pair.name }}.SBS4608.all
-    - {{ results_dir }}/SBS/{{ pair.name }}.SBS6144.all
-    - {{ results_dir }}/ID/{{ pair.name }}.ID28.all
-    - {{ results_dir }}/ID/{{ pair.name }}.ID83.all
-    - {{ results_dir }}/ID/{{ pair.name }}.ID96.all
-    - {{ results_dir }}/ID/{{ pair.name }}.ID332.all
-    - {{ results_dir }}/ID/{{ pair.name }}.ID415.all
-    - {{ results_dir }}/ID/{{ pair.name }}.ID8628.all
-    - {{ results_dir }}/DBS/{{ pair.name }}.DBS78.all
-    - {{ results_dir }}/DBS/{{ pair.name }}.DBS150.all
-    - {{ results_dir }}/DBS/{{ pair.name }}.DBS186.all
-    - {{ results_dir }}/DBS/{{ pair.name }}.DBS1248.all
-    - {{ results_dir }}/DBS/{{ pair.name }}.DBS2400.all
-    - {{ results_dir }}/DBS/{{ pair.name }}.DBS2976.all
+    - {{ results_dir }}/SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Activities/SBS96_De-Novo_Activities_refit.txt
+    - {{ results_dir }}/SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Activities/SBS96_De-Novo_Activity_Plots_refit.pdf
+    - {{ results_dir }}/SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Activities/SBS96_De-Novo_TMB_plot_refit.pdf
+    - {{ results_dir }}/SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Activities/De_Novo_Mutation_Probabilities_refit.txt
+    - {{ results_dir }}/SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Signatures/SBS96_De-Novo_Signatures.txt
+    - {{ results_dir }}/SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Signatures/SBS_96_plots_SBS96_De-Novo.pdf
+    - {{ results_dir }}/ID83/Suggested_Solution/ID83_De-Novo_Solution/Activities/ID83_De-Novo_Activities_refit.txt
+    - {{ results_dir }}/ID83/Suggested_Solution/ID83_De-Novo_Solution/Activities/ID83_De-Novo_Activity_Plots_refit.pdf
+    - {{ results_dir }}/ID83/Suggested_Solution/ID83_De-Novo_Solution/Activities/ID83_De-Novo_TMB_plot_refit.pdf
+    - {{ results_dir }}/ID83/Suggested_Solution/ID83_De-Novo_Solution/Activities/De_Novo_Mutation_Probabilities_refit.txt
+    - {{ results_dir }}/ID83/Suggested_Solution/ID83_De-Novo_Solution/Signatures/ID83_De-Novo_Signatures.txt
+    - {{ results_dir }}/ID83/Suggested_Solution/ID83_De-Novo_Solution/Signatures/ID_83_plots_ID83_De-Novo.pdf
+    - {{ results_dir }}/DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Activities/DBS78_De-Novo_Activities_refit.txt
+    - {{ results_dir }}/DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Activities/DBS78_De-Novo_Activity_Plots_refit.pdf
+    - {{ results_dir }}/DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Activities/DBS78_De-Novo_TMB_plot_refit.pdf
+    - {{ results_dir }}/DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Activities/De_Novo_Mutation_Probabilities_refit.txt
+    - {{ results_dir }}/DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Signatures/DBS78_De-Novo_Signatures.txt
+    - {{ results_dir }}/DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Signatures/DBS_78_plots_DBS78_De-Novo.pdf
+    - {{ results_dir }}/extraneous_results.tar
   walltime: "24:00:00"
   cpus: 10
   mem: 8G
@@ -60,39 +58,42 @@
       --output {{ temp_dir }} \
       --project {{ pair.name }} \
       --genome dog \
-      --matrix_only
+      --extract_only
 
     {# It's possible for no signatures to be found, so we need an if statement to check for output #}
     if [ "$(ls -A {{ temp_dir }}/vcfs/output)" ]; then
+      {# Remove true temp files #}
+      rm -r {{ temp_dir }}/JOB_METADATA.txt {{ temp_dir }}/Seeds.txt
+
       {# Prepare the known useful output #}
       {# rsync -R copies the relative path after the /./ section #}
-      if [ -d "{{ temp_dir }}/vcfs/output/SBS" ]; then
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS6.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS18.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS24.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS96.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS288.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS384.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS1536.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS4608.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./SBS/{{ pair.name }}.SBS6144.all {{ results_dir }}
+      if [ -d "{{ temp_dir }}/SBS96/Suggested_Solution" ]; then
+      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Activities/SBS96_De-Novo_Activities_refit.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Activities/SBS96_De-Novo_Activity_Plots_refit.pdf {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Activities/SBS96_De-Novo_TMB_plot_refit.pdf {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Activities/De_Novo_Mutation_Probabilities_refit.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Signatures/SBS96_De-Novo_Signatures.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Signatures/SBS_96_plots_SBS96_De-Novo.pdf {{ results_dir }}
       fi
-      if [ -d "{{ temp_dir }}/vcfs/output/ID" ]; then
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./ID/{{ pair.name }}.ID28.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./ID/{{ pair.name }}.ID83.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./ID/{{ pair.name }}.ID96.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./ID/{{ pair.name }}.ID332.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./ID/{{ pair.name }}.ID415.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./ID/{{ pair.name }}.ID8628.all {{ results_dir }}
+      if [ -d "{{ temp_dir }}/ID83/Suggested_Solution" ]; then
+      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/ID83_De-Novo_Solution/Activities/ID83_De-Novo_Activities_refit.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/ID83_De-Novo_Solution/Activities/ID83_De-Novo_Activity_Plots_refit.pdf {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/ID83_De-Novo_Solution/Activities/ID83_De-Novo_TMB_plot_refit.pdf {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/ID83_De-Novo_Solution/Activities/De_Novo_Mutation_Probabilities_refit.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/ID83_De-Novo_Solution/Signatures/ID83_De-Novo_Signatures.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/ID83_De-Novo_Solution/Signatures/ID_83_plots_ID83_De-Novo.pdf {{ results_dir }}
       fi
-      if [ -d "{{ temp_dir }}/vcfs/output/DBS" ]; then
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./DBS/{{ pair.name }}.DBS78.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./DBS/{{ pair.name }}.DBS150.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./DBS/{{ pair.name }}.DBS186.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./DBS/{{ pair.name }}.DBS1248.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./DBS/{{ pair.name }}.DBS2400.all {{ results_dir }}
-      rsync -R --remove-source-files {{ temp_dir }}/vcfs/output/./DBS/{{ pair.name }}.DBS2976.all {{ results_dir }}
+      if [ -d "{{ temp_dir }}/DBS78/Suggested_Solution" ]; then
+      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Activities/DBS78_De-Novo_Activities_refit.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Activities/DBS78_De-Novo_Activity_Plots_refit.pdf {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Activities/DBS78_De-Novo_TMB_plot_refit.pdf {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Activities/De_Novo_Mutation_Probabilities_refit.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Signatures/DBS78_De-Novo_Signatures.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Signatures/DBS_78_plots_DBS78_De-Novo.pdf {{ results_dir }}
       fi
+
+      {# tar the files that are not known to be immediately important #}
+      tar -cvf {{ results_dir }}/extraneous_results.tar {{ temp_dir }}/*
     else
       echo "No signatures found"
     fi
