@@ -1,5 +1,6 @@
 {% from 'modules/annotation/main.jst' import annotate_vcfs with context %}
 {% from 'utilities/remove_files.jst' import remove_files with context %}
+{% from 'utilities/vcf_stats.jst' import vcf_stats with context %}
 
 {%- macro genotypegvcf(sample, aligner='bwa', taskPrefix='Genome') %}
 
@@ -136,12 +137,12 @@
       --resource "{{ resource }}" \
       {% endfor %}
       --variant "{{ all_vcf }}" \
-      --output "{{ temp_dir }}/{{ sample.name }}.hc.fvt.vcf.gz" \
-       
+      --output "{{ temp_dir }}/{{ sample.name }}.hc.fvt.vcf.gz"
+
     {# Then filter out the passing variants to a separate file #}
     bcftools filter \
       --output-type z \
-      --include 'FILTER == "."' \
+      --include 'FILTER == "PASS"' \
       {% if sample.gltype == 'exome' %}
       --targets-file "{{ sample.capture_kit.extended_bed }}" \
       {% endif %}
@@ -152,5 +153,7 @@
 
 
 {{- annotate_vcfs(sample, temp_dir, results_dir, pass_vcf, taskPrefix, aligner, 'hc', 'constitutional', 'genotype_hc_gvcf') }}
-{% endmacro %}
+{{- vcf_stats(pass_vcf, results_dir) }}
+{{- vcf_stats(all_vcf, results_dir) }}
 
+{% endmacro %}

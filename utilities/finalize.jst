@@ -41,6 +41,13 @@
             ln --symbolic --force ${line}
           done
         {% endif %}
+
+        {% if tasks[taskPrefix+"_constitutional_cna_caller_gatk"]|default(true) %}
+          for line in `find ../{{ general_library_type }}/constitutional_copy_number/gatk -name "*.re_centered.cr.igv.seg"`
+          do
+            ln --symbolic --force ${line}
+          done
+        {% endif %}
       {% elif general_library_type in 'genome' %}
         {% set taskPrefix = 'Genome' %}
 
@@ -69,6 +76,13 @@
 
         {% if tasks[taskPrefix+"_somatic_cna_caller_gatk"]|default(true) %}
           for line in `find ../{{ general_library_type }}/somatic_copy_number/gatk -name "*.re_centered.cr.igv.seg"`
+          do
+            ln --symbolic --force ${line}
+          done
+        {% endif %}
+
+        {% if tasks[taskPrefix+"_constitutional_cna_caller_gatk"]|default(true) %}
+          for line in `find ../{{ general_library_type }}/constitutional_copy_number/gatk -name "*.re_centered.cr.igv.seg"`
           do
             ln --symbolic --force ${line}
           done

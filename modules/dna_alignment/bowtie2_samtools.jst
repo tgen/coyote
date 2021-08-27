@@ -35,6 +35,14 @@
     set -eu
     set -o pipefail
 
+    {% if fastq.fileType == "fasterq" %}
+      export PetaLinkMode="{{ constants.tools.petagene.PetaLinkMode }}"
+      module load {{ constants.tools.petagene.module }}
+
+    {% endif %}
+    {#
+      This comment is here for protect render spacing, do not remove.
+    #}
     rm -r "temp/{{ sample.gltype }}/alignment/bowtie2/{{ sample.name }}/{{ rgid }}/{{ fastq.basename }}/" || true
     mkdir -p "temp/{{ sample.gltype }}/alignment/bowtie2/{{ sample.name }}/{{ rgid }}/{{ fastq.basename }}/"
 
@@ -249,8 +257,8 @@
 
     {# Extracting ecoli alignments #}
     samtools view \
-      -b
-      -o "{{ sample.gltype }}/alignment/bowtie2/{{ sample.name }}/{{ sample.name }}.bowtie2_ecoli.bam"
+      -b \
+      -o "{{ sample.gltype }}/alignment/bowtie2/{{ sample.name }}/{{ sample.name }}.bowtie2_ecoli.bam" \
       "{{ sample.gltype }}/alignment/bowtie2/{{ sample.name }}/{{ sample.name }}.bowtie2.bam" \
       "U00096.3"
 
@@ -265,7 +273,11 @@
 
     {# Calculating spike and scale for genomecov #}
     SPIKE=$(wc -l < "temp/{{ sample.gltype }}/alignment/bowtie2/{{ sample.name }}/{{ sample.name }}.bowtie2_ecoli.bed")
-    SCALE=$(echo "10000 / $SPIKE" | bc -l)
+    if [ $SPIKE -gt 0 ]; then
+      SCALE=$(echo "10000 / $SPIKE" | bc -l)
+    else
+      SCALE=$(echo "10000")
+    fi
 
     TAB=$'\t'
     cat <<EOF > "temp/{{ sample.gltype }}/alignment/bowtie2/callRegions.bed"
@@ -277,11 +289,10 @@
     bedtools genomecov \
       -bg \
       -scale $SCALE \
-      -i "temp/{{ sample.gltype }}/alignment/bowtie2/{{ sample.name }}/{{ sample.name }}.bowtie2.bed" \
-      -g "temp/{{ sample.gltype }}/alignment/bowtie2/callRegions.bed" \
+      -i "temp/{{ sample.gltype }}/alignment/bowtie2/{{ sample.name }}/{{ sample.name }}.no_decoy.bowtie2.bed" \
+      -g "temp/{{ sample.gltype }}/alignment/bowtie2/{{ sample.name }}/callRegions.bed" \
       > "{{ sample.gltype }}/alignment/bowtie2/{{ sample.name }}/{{ sample.name }}.bowtie2_ecoli_norm.bedgraph"
 
 {% endif %}
 
 {% endmacro %}
-

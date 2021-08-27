@@ -1,0 +1,101 @@
+{% from 'utilities/variant_filtering.jst' import filter_variants with context %}
+
+{% macro sigprofiler(pair, vcf_prefix, variant_caller, aligner) %}
+
+{% set temp_dir %}temp/{{ pair.gltype }}/metrics/sigprofiler/{{ pair.name }}{% endset %}
+{% set temp_vcf_dir %}{{ temp_dir }}/vcfs{% endset %}
+{% set results_dir %}{{ pair.gltype }}/metrics/sigprofiler/{{ pair.name }}{% endset %}
+{% set all_vcf %}{{ vcf_prefix }}.vcf.gz{% endset %}
+{% set filt_vcf %}{{ temp_vcf_dir }}/{{ vcf_prefix|basename }}.pass.vcf{% endset %}
+
+{% set task %}sigprofiler_{{ variant_caller }}_{{ pair.name }}_{{ aligner }}{% endset %}
+{{- filter_variants(pair, all_vcf, temp_vcf_dir, filt_vcf, task) }}
+
+- name: sigprofiler_{{ variant_caller }}_{{ pair.name }}_{{ aligner }}
+  tags:
+  input:
+    - {{ filt_vcf }}
+  output:
+    - {{ results_dir }}/SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Activities/SBS96_De-Novo_Activities_refit.txt
+    - {{ results_dir }}/SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Activities/SBS96_De-Novo_Activity_Plots_refit.pdf
+    - {{ results_dir }}/SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Activities/SBS96_De-Novo_TMB_plot_refit.pdf
+    - {{ results_dir }}/SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Activities/De_Novo_Mutation_Probabilities_refit.txt
+    - {{ results_dir }}/SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Signatures/SBS96_De-Novo_Signatures.txt
+    - {{ results_dir }}/SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Signatures/SBS_96_plots_SBS96_De-Novo.pdf
+    - {{ results_dir }}/ID83/Suggested_Solution/ID83_De-Novo_Solution/Activities/ID83_De-Novo_Activities_refit.txt
+    - {{ results_dir }}/ID83/Suggested_Solution/ID83_De-Novo_Solution/Activities/ID83_De-Novo_Activity_Plots_refit.pdf
+    - {{ results_dir }}/ID83/Suggested_Solution/ID83_De-Novo_Solution/Activities/ID83_De-Novo_TMB_plot_refit.pdf
+    - {{ results_dir }}/ID83/Suggested_Solution/ID83_De-Novo_Solution/Activities/De_Novo_Mutation_Probabilities_refit.txt
+    - {{ results_dir }}/ID83/Suggested_Solution/ID83_De-Novo_Solution/Signatures/ID83_De-Novo_Signatures.txt
+    - {{ results_dir }}/ID83/Suggested_Solution/ID83_De-Novo_Solution/Signatures/ID_83_plots_ID83_De-Novo.pdf
+    - {{ results_dir }}/DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Activities/DBS78_De-Novo_Activities_refit.txt
+    - {{ results_dir }}/DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Activities/DBS78_De-Novo_Activity_Plots_refit.pdf
+    - {{ results_dir }}/DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Activities/DBS78_De-Novo_TMB_plot_refit.pdf
+    - {{ results_dir }}/DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Activities/De_Novo_Mutation_Probabilities_refit.txt
+    - {{ results_dir }}/DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Signatures/DBS78_De-Novo_Signatures.txt
+    - {{ results_dir }}/DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Signatures/DBS_78_plots_DBS78_De-Novo.pdf
+    - {{ results_dir }}/extraneous_results.tar
+  walltime: "24:00:00"
+  cpus: 10
+  mem: 8G
+  cmd: |
+    set -eu
+    set -o pipefail
+
+    module load {{ constants.tools.sigprofiler.module }}
+    module load {{ constants.tools.bcftools.module }}
+
+    {# Remove previously generated matrix #}
+    rm -r {{ temp_dir }}/vcfs/*/ || true
+
+    {# Should already exist #}
+    mkdir -p {{ temp_dir }}/vcfs
+    mkdir -p {{ results_dir }}
+
+    python3 ${JS_PIPELINE_PATH}/required_scripts/{{ constants.coyote.sigprofiler }} \
+      --threads 10 \
+      --vcfpath {{ temp_dir }}/vcfs \
+      --output {{ temp_dir }} \
+      --project {{ pair.name }} \
+      --genome dog \
+      --extract_only
+
+    {# It's possible for no signatures to be found, so we need an if statement to check for output #}
+    if [ "$(ls -A {{ temp_dir }}/vcfs/output)" ]; then
+      {# Remove true temp files #}
+      rm -r {{ temp_dir }}/JOB_METADATA.txt {{ temp_dir }}/Seeds.txt
+
+      {# Prepare the known useful output #}
+      {# rsync -R copies the relative path after the /./ section #}
+      if [ -d "{{ temp_dir }}/SBS96/Suggested_Solution" ]; then
+      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Activities/SBS96_De-Novo_Activities_refit.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Activities/SBS96_De-Novo_Activity_Plots_refit.pdf {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Activities/SBS96_De-Novo_TMB_plot_refit.pdf {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Activities/De_Novo_Mutation_Probabilities_refit.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Signatures/SBS96_De-Novo_Signatures.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./SBS96/Suggested_Solution/SBS96_De-Novo_Solution/Signatures/SBS_96_plots_SBS96_De-Novo.pdf {{ results_dir }}
+      fi
+      if [ -d "{{ temp_dir }}/ID83/Suggested_Solution" ]; then
+      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/ID83_De-Novo_Solution/Activities/ID83_De-Novo_Activities_refit.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/ID83_De-Novo_Solution/Activities/ID83_De-Novo_Activity_Plots_refit.pdf {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/ID83_De-Novo_Solution/Activities/ID83_De-Novo_TMB_plot_refit.pdf {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/ID83_De-Novo_Solution/Activities/De_Novo_Mutation_Probabilities_refit.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/ID83_De-Novo_Solution/Signatures/ID83_De-Novo_Signatures.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./ID83/Suggested_Solution/ID83_De-Novo_Solution/Signatures/ID_83_plots_ID83_De-Novo.pdf {{ results_dir }}
+      fi
+      if [ -d "{{ temp_dir }}/DBS78/Suggested_Solution" ]; then
+      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Activities/DBS78_De-Novo_Activities_refit.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Activities/DBS78_De-Novo_Activity_Plots_refit.pdf {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Activities/DBS78_De-Novo_TMB_plot_refit.pdf {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Activities/De_Novo_Mutation_Probabilities_refit.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Signatures/DBS78_De-Novo_Signatures.txt {{ results_dir }}
+      rsync -R --remove-source-files {{ temp_dir }}/./DBS78/Suggested_Solution/DBS78_De-Novo_Solution/Signatures/DBS_78_plots_DBS78_De-Novo.pdf {{ results_dir }}
+      fi
+
+      {# tar the files that are not known to be immediately important #}
+      tar -cvf {{ results_dir }}/extraneous_results.tar {{ temp_dir }}/*
+    else
+      echo "No signatures found"
+    fi
+
+{% endmacro %}

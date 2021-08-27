@@ -3,7 +3,7 @@
 # to upload to LIMS via REST api integration.
 
 {% macro stats2lims(tag1, tag2, task, input_file, file_type) %}
-{% if submissionSource == "TGenLIMS" %}
+{% if submissionSource == "TGenLIMS" and file_type != "samtools_idxstats" %}
 
 - name: stats2lims_{{ task }}_{{ file_type }}
   tags: [{{ tag1 }}, quality_control, stats, stats2lims, {{ tag2 }}]
